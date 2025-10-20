@@ -1,15 +1,8 @@
-import { FastifyRequest, FastifyReply } from "fastify";
-import { auth } from "./lib/auth";
+import { FastifyReply, FastifyRequest } from "fastify";
+import { auth } from "../lib/auth";
 import { fromNodeHeaders } from "better-auth/node";
 
-declare module "fastify" {
-  interface FastifyRequest {
-    session?: any;
-    user?: any;
-  }
-}
-
-export const authMiddleware = async (
+export const adminMiddleware = async (
   request: FastifyRequest,
   reply: FastifyReply
 ) => {
@@ -18,13 +11,10 @@ export const authMiddleware = async (
       headers: fromNodeHeaders(request.headers),
     });
 
-    if (!session) {
-      return reply.status(401).send({
-        message: "You are not authenticated",
-      });
+    if (session?.user.role !== "admin") {
+      return reply.status(403).send("You are not authorized");
     }
 
-    request.session = session;
     request.user = session.user;
   } catch (err) {
     return reply.status(500).send({
