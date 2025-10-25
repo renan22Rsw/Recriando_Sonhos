@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import cors from "@fastify/cors";
 
 import { authRoutes } from "./routes/auth-routes";
+import { productRoutes } from "./routes/product-routes";
+import multipart from "@fastify/multipart";
 
 dotenv.config();
 
@@ -11,6 +13,8 @@ const port = Number(process.env.PORT) || 8000;
 const fastify = Fastify({
   logger: true,
 });
+
+fastify.register(multipart);
 
 fastify.register(cors, {
   origin: process.env.ORIGIN_URL,
@@ -21,6 +25,10 @@ fastify.register(cors, {
 });
 
 fastify.register(authRoutes);
+
+fastify.register(productRoutes, {
+  prefix: "/api",
+});
 
 fastify
   .listen({ port, host: "0.0.0.0" })

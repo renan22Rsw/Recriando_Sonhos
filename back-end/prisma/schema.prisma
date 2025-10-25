@@ -78,3 +78,17 @@ model Verification {
 
   @@map("verification")
 }
+
+
+model Product {
+  id            String   @id @default(cuid())
+  title         String
+  description   String
+  image         String
+  price         Float
+  available     Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("product")
+}

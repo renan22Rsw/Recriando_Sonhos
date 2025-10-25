@@ -11,6 +11,10 @@ export const adminMiddleware = async (
       headers: fromNodeHeaders(request.headers),
     });
 
+    if (!session?.user) {
+      return reply.status(401).send("You are not authenticated");
+    }
+
     if (session?.user.role !== "admin") {
       return reply.status(403).send("You are not authorized");
     }
