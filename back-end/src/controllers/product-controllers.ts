@@ -9,7 +9,11 @@ export class ProductsController {
 
   async getAllProductsController(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const products = await this.productsServices.getAllProductsService();
+      const { search } = request.query as { search: string };
+      const products = await this.productsServices.getAllProductsService(
+        search
+      );
+
       return reply.status(200).send(products);
     } catch (err) {
       if (err instanceof Error) {

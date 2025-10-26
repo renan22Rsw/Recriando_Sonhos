@@ -2,8 +2,25 @@ import { db } from "../database";
 import { CreateProductProps, UpdateProductProps } from "../types/product-types";
 
 export class ProductsServices {
-  async getAllProductsService() {
+  async getAllProductsService(search: string) {
     try {
+      if (search) {
+        const products = await db.product.findMany({
+          where: {
+            title: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+        });
+
+        if (products.length === 0) {
+          throw new Error("Produto nao encontrado");
+        }
+
+        return products;
+      }
+
       const products = await db.product.findMany();
       return products;
     } catch (err) {
