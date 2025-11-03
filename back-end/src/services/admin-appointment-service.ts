@@ -1,7 +1,7 @@
 import { db } from "../database";
 
-export class AdminAppointmentServices {
-  async getAdminAppointmentsService(role: string) {
+export class AdminAppointmentService {
+  async getAdminAppointments(role: string) {
     try {
       if (role !== "admin") throw new Error("Acesso negado");
 

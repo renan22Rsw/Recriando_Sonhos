@@ -1,12 +1,12 @@
 import { FastifyInstance } from "fastify";
-import { AdminAppointmentServices } from "../../services/admin-appointment-services";
-import { AdminAppointmentController } from "../../controllers/admin-appointment-controllers";
+import { AdminAppointmentService } from "../../services/admin-appointment-service";
+import { AdminAppointmentController } from "../../controllers/admin-appointment-controller";
 import { adminMiddleware } from "../../middleware/admin-middleware";
 
 export const adminAppointmentsRoutes = (app: FastifyInstance) => {
-  const adminAppointmentServices = new AdminAppointmentServices();
+  const adminAppointmentService = new AdminAppointmentService();
   const adminAppointmentController = new AdminAppointmentController(
-    adminAppointmentServices
+    adminAppointmentService
   );
 
   app.get(

@@ -1,10 +1,10 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { AdminAppointmentServices } from "../services/admin-appointment-services";
+import { AdminAppointmentService } from "../services/admin-appointment-service";
 import { auth } from "../lib/auth";
 import { fromNodeHeaders } from "better-auth/node";
 
 export class AdminAppointmentController {
-  constructor(private appointmentService: AdminAppointmentServices) {}
+  constructor(private adminAppointmentService: AdminAppointmentService) {}
 
   private async getAdminRole(request: FastifyRequest) {
     const session = await auth.api.getSession({
@@ -23,7 +23,7 @@ export class AdminAppointmentController {
       const adminRole = await this.getAdminRole(request);
 
       const appointments =
-        await this.appointmentService.getAdminAppointmentsService(adminRole);
+        await this.adminAppointmentService.getAdminAppointments(adminRole);
 
       return reply.status(200).send(appointments);
     } catch (err) {
@@ -43,7 +43,10 @@ export class AdminAppointmentController {
       const adminRole = await this.getAdminRole(request);
       const { id } = request.params as { id: string };
 
-      await this.appointmentService.confirmUserAppointmentStatus(adminRole, id);
+      await this.adminAppointmentService.confirmUserAppointmentStatus(
+        adminRole,
+        id
+      );
 
       return reply
         .status(200)
@@ -62,7 +65,10 @@ export class AdminAppointmentController {
       const adminRole = await this.getAdminRole(request);
       const { id } = request.params as { id: string };
 
-      await this.appointmentService.cancelUserAppointmentStatus(adminRole, id);
+      await this.adminAppointmentService.cancelUserAppointmentStatus(
+        adminRole,
+        id
+      );
 
       return reply
         .status(200)
@@ -84,7 +90,10 @@ export class AdminAppointmentController {
       const adminRole = await this.getAdminRole(request);
       const { id } = request.params as { id: string };
 
-      await this.appointmentService.deleteAppointmentFromUser(adminRole, id);
+      await this.adminAppointmentService.deleteAppointmentFromUser(
+        adminRole,
+        id
+      );
 
       return reply
         .status(200)

@@ -5,7 +5,8 @@ import cors from "@fastify/cors";
 import { authRoutes } from "./routes/auth-routes";
 import { productRoutes } from "./routes/product-routes";
 import multipart from "@fastify/multipart";
-import { appointmentRoutes } from "./routes/appointments/user-appointment-routes";
+import { adminAppointmentsRoutes } from "./routes/appointments/admin-appointment-routes";
+import { userAppointmentsRoutes } from "./routes/appointments/user-appointment-routes";
 
 dotenv.config();
 
@@ -31,7 +32,11 @@ fastify.register(productRoutes, {
   prefix: "/api",
 });
 
-fastify.register(appointmentRoutes, {
+fastify.register(adminAppointmentsRoutes, {
+  prefix: "/api",
+});
+
+fastify.register(userAppointmentsRoutes, {
   prefix: "/api",
 });
 
