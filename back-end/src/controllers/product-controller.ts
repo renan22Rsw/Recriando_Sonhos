@@ -1,18 +1,16 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { ProductsServices } from "../services/product-services";
+import { ProductService } from "../services/product-service";
 import { productSchema, updateProductSchema } from "../schemas/products";
 import { uploadProductImage } from "../utils/upload-product-image";
 import { db } from "../database";
 
-export class ProductsController {
-  constructor(private productsServices: ProductsServices) {}
+export class ProductController {
+  constructor(private productService: ProductService) {}
 
-  async getAllProductsController(request: FastifyRequest, reply: FastifyReply) {
+  async getAllProducts(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { search } = request.query as { search: string };
-      const products = await this.productsServices.getAllProductsService(
-        search
-      );
+      const products = await this.productService.getAllProducts(search);
 
       return reply.status(200).send(products);
     } catch (err) {
@@ -23,13 +21,10 @@ export class ProductsController {
     }
   }
 
-  async getProductsByIdController(
-    request: FastifyRequest,
-    reply: FastifyReply
-  ) {
+  async getProductsById(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { id } = request.params as { id: string };
-      const product = await this.productsServices.getProductsById(id);
+      const product = await this.productService.getProductsById(id);
 
       if (!product?.id) {
         return reply.status(404).send("Produto nao encontrado");
@@ -44,7 +39,7 @@ export class ProductsController {
     }
   }
 
-  async createProductController(request: FastifyRequest, reply: FastifyReply) {
+  async createProduct(request: FastifyRequest, reply: FastifyReply) {
     try {
       const parts = request.parts();
       const formData: Record<string, any> = {};
@@ -58,7 +53,7 @@ export class ProductsController {
       const { title, description, price, available } =
         productSchema.parse(formData);
 
-      const product = await this.productsServices.createProductService({
+      const product = await this.productService.createProduct({
         title,
         description,
         image: productImageUrl as string,
@@ -75,7 +70,7 @@ export class ProductsController {
     }
   }
 
-  async updateProductController(request: FastifyRequest, reply: FastifyReply) {
+  async updateProduct(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { id } = request.params as { id: string };
       const formData: Record<string, any> = {};
@@ -96,7 +91,7 @@ export class ProductsController {
       const { title, description, price, available } =
         updateProductSchema.parse(formData);
 
-      await this.productsServices.updateProductService(id, {
+      await this.productService.updateProduct(id, {
         title,
         description,
         image:
@@ -118,11 +113,11 @@ export class ProductsController {
     }
   }
 
-  async deleteProductController(request: FastifyRequest, reply: FastifyReply) {
+  async deleteProduct(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { id } = request.params as { id: string };
 
-      await this.productsServices.deleteProductService(id);
+      await this.productService.deleteProduct(id);
 
       return reply
         .status(200)

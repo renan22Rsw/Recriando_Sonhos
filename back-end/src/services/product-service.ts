@@ -1,8 +1,8 @@
 import { db } from "../database";
 import { CreateProductProps, UpdateProductProps } from "../types/product-types";
 
-export class ProductsServices {
-  async getAllProductsService(search: string) {
+export class ProductService {
+  async getAllProducts(search: string) {
     try {
       if (search) {
         const products = await db.product.findMany({
@@ -40,7 +40,7 @@ export class ProductsServices {
         },
       });
 
-      if (product?.id) {
+      if (!product?.id) {
         throw new Error("Produto nao encontrado");
       }
 
@@ -54,7 +54,7 @@ export class ProductsServices {
     }
   }
 
-  async createProductService(data: CreateProductProps) {
+  async createProduct(data: CreateProductProps) {
     try {
       const { title, description, price, image, available } = data;
 
@@ -78,7 +78,7 @@ export class ProductsServices {
     }
   }
 
-  async updateProductService(id: string, data: UpdateProductProps) {
+  async updateProduct(id: string, data: UpdateProductProps) {
     try {
       const product = await db.product.findUnique({
         where: {
@@ -109,7 +109,7 @@ export class ProductsServices {
     }
   }
 
-  async deleteProductService(id: string) {
+  async deleteProduct(id: string) {
     try {
       const product = await db.product.findUnique({
         where: {
