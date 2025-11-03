@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { UserAppointmentServices } from "../services/user-appointment-services";
+import { UserAppointmentService } from "../services/user-appointment-service";
 import {
   appointmentSchema,
   appointmentUpdateSchema,
@@ -8,7 +8,7 @@ import { auth } from "../lib/auth";
 import { fromNodeHeaders } from "better-auth/node";
 
 export class UserAppointmentController {
-  constructor(private appointmentService: UserAppointmentServices) {}
+  constructor(private userAppointmentService: UserAppointmentService) {}
 
   private async getUserId(request: FastifyRequest): Promise<string> {
     const session = await auth.api.getSession({
@@ -22,15 +22,12 @@ export class UserAppointmentController {
     return session.user.id;
   }
 
-  async getUserAppointmentsController(
-    request: FastifyRequest,
-    reply: FastifyReply
-  ) {
+  async getUserAppointments(request: FastifyRequest, reply: FastifyReply) {
     try {
       const userId = await this.getUserId(request);
 
       const appointments =
-        await this.appointmentService.getUserAppointmentsService(userId);
+        await this.userAppointmentService.getUserAppointments(userId);
 
       return reply.status(200).send(appointments);
     } catch (err) {
@@ -42,10 +39,7 @@ export class UserAppointmentController {
     }
   }
 
-  async createUserAppointmentController(
-    request: FastifyRequest,
-    reply: FastifyReply
-  ) {
+  async createUserAppointment(request: FastifyRequest, reply: FastifyReply) {
     try {
       const userId = await this.getUserId(request);
 
@@ -54,7 +48,7 @@ export class UserAppointmentController {
       const appointmentData = appointmentSchema.parse(request.body);
 
       const appointment =
-        await this.appointmentService.createUserAppointmentService(
+        await this.userAppointmentService.createUserAppointment(
           { ...appointmentData, userId, productId },
           productId
         );
@@ -69,23 +63,17 @@ export class UserAppointmentController {
     }
   }
 
-  async updateUserAppointmentController(
-    request: FastifyRequest,
-    reply: FastifyReply
-  ) {
+  async updateUserAppointment(request: FastifyRequest, reply: FastifyReply) {
     try {
       const userId = await this.getUserId(request);
       const { appointmentId } = request.params as { appointmentId: string };
 
       const appointmentData = appointmentUpdateSchema.parse(request.body);
 
-      await this.appointmentService.updateUserAppointmentService(
-        appointmentId,
-        {
-          ...appointmentData,
-          userId,
-        }
-      );
+      await this.userAppointmentService.updateUserAppointment(appointmentId, {
+        ...appointmentData,
+        userId,
+      });
 
       return reply
         .status(200)
@@ -99,15 +87,12 @@ export class UserAppointmentController {
     }
   }
 
-  async deleteUserAppointmentController(
-    request: FastifyRequest,
-    reply: FastifyReply
-  ) {
+  async deleteUserAppointment(request: FastifyRequest, reply: FastifyReply) {
     try {
       const userId = await this.getUserId(request);
       const { appointmentId } = request.params as { appointmentId: string };
 
-      await this.appointmentService.deleteUserAppointmentService(
+      await this.userAppointmentService.deleteUserAppointment(
         appointmentId,
         userId
       );

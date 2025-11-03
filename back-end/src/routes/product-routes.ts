@@ -4,8 +4,8 @@ import { ProductController } from "../controllers/product-controller";
 import { adminMiddleware } from "../middleware/admin-middleware";
 
 export const productRoutes = (app: FastifyInstance) => {
-  const productsServices = new ProductService();
-  const productsController = new ProductController(productsServices);
+  const productService = new ProductService();
+  const productsController = new ProductController(productService);
 
   app.get("/products", async (request, reply) =>
     productsController.getAllProducts(request, reply)

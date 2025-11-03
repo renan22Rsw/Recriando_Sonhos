@@ -5,8 +5,8 @@ import {
 } from "../types/appointment-types";
 import { encryptedPhone } from "../utils/encryptedPhone";
 
-export class UserAppointmentServices {
-  async getUserAppointmentsService(userId: string) {
+export class UserAppointmentService {
+  async getUserAppointments(userId: string) {
     try {
       const appointments = await db.appointment.findMany({
         where: { userId },
@@ -23,10 +23,7 @@ export class UserAppointmentServices {
     }
   }
 
-  async createUserAppointmentService(
-    data: AppointmentProps,
-    productId: string
-  ) {
+  async createUserAppointment(data: AppointmentProps, productId: string) {
     try {
       const product = await db.product.findUnique({ where: { id: productId } });
 
@@ -63,7 +60,7 @@ export class UserAppointmentServices {
     }
   }
 
-  async updateUserAppointmentService(id: string, data: UpdateAppointmentProps) {
+  async updateUserAppointment(id: string, data: UpdateAppointmentProps) {
     try {
       const appointment = await db.appointment.findUnique({ where: { id } });
 
@@ -86,7 +83,7 @@ export class UserAppointmentServices {
     }
   }
 
-  async deleteUserAppointmentService(id: string, userId: string) {
+  async deleteUserAppointment(id: string, userId: string) {
     try {
       const appointment = await db.appointment.findUnique({ where: { id } });
 
