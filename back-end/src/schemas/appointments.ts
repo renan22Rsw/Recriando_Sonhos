@@ -41,6 +41,15 @@ export const appointmentSchema = z.object({
           error: "Apenas sábado e domingo são disponiveis para o agendamento",
         }
       )
+      .refine(
+        (date) => {
+          const now = new Date();
+          return date >= now;
+        },
+        {
+          error: "Data deve ser maior ou igual a data atual",
+        }
+      )
   ),
 
   status: z.string().default("pending"),
@@ -81,6 +90,15 @@ export const appointmentUpdateSchema = z.object({
         },
         {
           error: "Apenas sábado e domingo são disponiveis para o agendamento",
+        }
+      )
+      .refine(
+        (date) => {
+          const now = new Date();
+          return date >= now;
+        },
+        {
+          error: "Data deve ser maior ou igual a data atual",
         }
       )
       .optional()
