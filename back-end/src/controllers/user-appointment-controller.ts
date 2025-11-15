@@ -66,6 +66,7 @@ export class UserAppointmentController {
   async updateUserAppointment(request: FastifyRequest, reply: FastifyReply) {
     try {
       const userId = await this.getUserId(request);
+
       const { appointmentId } = request.params as { appointmentId: string };
 
       const appointmentData = appointmentUpdateSchema.parse(request.body);

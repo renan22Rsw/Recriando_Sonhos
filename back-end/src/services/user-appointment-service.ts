@@ -4,6 +4,7 @@ import {
   UpdateAppointmentProps,
 } from "../types/appointment-types";
 import { encryptedPhone } from "../utils/encryptedPhone";
+import { sendEmail } from "../utils/send-email";
 
 export class UserAppointmentService {
   async getUserAppointments(userId: string) {
@@ -26,6 +27,14 @@ export class UserAppointmentService {
   async createUserAppointment(data: AppointmentProps, productId: string) {
     try {
       const product = await db.product.findUnique({ where: { id: productId } });
+
+      const admin = await db.user.findUnique({
+        where: {
+          email: process.env.ADMIN_EMAIL,
+        },
+      });
+
+      if (!admin) throw new Error("Usuário admin nao encontrado");
 
       if (!product) throw new Error("Produto não encontrado");
       if (!product.available)
@@ -53,6 +62,13 @@ export class UserAppointmentService {
         }),
       ]);
 
+      await sendEmail({
+        from: "onboarding@resend.dev", //Just for now
+        to: admin.email,
+        subject: "Novo agendamento",
+        html: `<p>Um novo agendamento foi realizado pelo usuário ${data.name}</p>`,
+      });
+
       return appointment;
     } catch (err) {
       if (err instanceof Error) throw err;
@@ -65,6 +81,7 @@ export class UserAppointmentService {
       const appointment = await db.appointment.findUnique({ where: { id } });
 
       if (!appointment) throw new Error("Agendamento não encontrado");
+
       if (appointment.userId !== data.userId)
         throw new Error("Usuário não autorizado");
 

@@ -2,7 +2,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { db } from "../database";
 import { admin } from "better-auth/plugins";
-import { sendEmail } from "../utils/send-email-verification";
+import { sendEmail as sendEmailVerification } from "../utils/send-email";
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
@@ -23,7 +23,7 @@ export const auth = betterAuth({
         const frontendUrl = process.env.ORIGIN_URL as string;
         const backendUrl = process.env.BACKEND_URL as string;
 
-        await sendEmail({
+        await sendEmailVerification({
           from: "onboarding@resend.dev",
           to: user.email,
           subject: "Verify your email adress",

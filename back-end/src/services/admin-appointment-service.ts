@@ -1,4 +1,5 @@
 import { db } from "../database";
+import { sendEmail } from "../utils/send-email";
 
 export class AdminAppointmentService {
   async getAdminAppointments(role: string) {
@@ -39,6 +40,13 @@ export class AdminAppointmentService {
         where: { id: appointment.id },
         data: { status: "confirmed" },
       });
+
+      await sendEmail({
+        from: "onboarding@resend.dev", // just for now
+        to: appointment.email,
+        subject: "Agendamento confirmado",
+        html: `Ola, ${appointment.name}. Seu agendamento foi confirmado!`,
+      });
     } catch (err) {
       if (err instanceof Error) throw err;
       throw new Error("Erro ao confirmar agendamento");
@@ -68,6 +76,13 @@ export class AdminAppointmentService {
           data: { available: true },
         }),
       ]);
+
+      await sendEmail({
+        from: "onboarding@resend.dev", // just for now
+        to: appointment.email,
+        subject: "Agendamento negado",
+        html: `Ola, ${appointment.name}. Seu agendamento foi negado!`,
+      });
 
       return cancelledUserAppointment;
     } catch (err) {
