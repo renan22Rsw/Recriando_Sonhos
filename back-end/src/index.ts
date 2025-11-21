@@ -1,10 +1,10 @@
 import Fastify from "fastify";
 import dotenv from "dotenv";
 import cors from "@fastify/cors";
+import multipart from "@fastify/multipart";
 
 import { authRoutes } from "./routes/auth-routes";
 import { productRoutes } from "./routes/product-routes";
-import multipart from "@fastify/multipart";
 import { adminAppointmentsRoutes } from "./routes/appointments/admin-appointment-routes";
 import { userAppointmentsRoutes } from "./routes/appointments/user-appointment-routes";
 
