@@ -8,118 +8,98 @@ import { sendEmail } from "../utils/send-email";
 
 export class UserAppointmentService {
   async getUserAppointments(userId: string) {
-    try {
-      const appointments = await db.appointment.findMany({
-        where: { userId },
-        include: {
-          product: true,
-          user: true,
-        },
-      });
+    if (!userId) throw new Error("Usuário nao encontrado");
 
-      return appointments;
-    } catch (err) {
-      if (err instanceof Error) throw err;
-      throw new Error("Erro ao buscar agendamentos");
-    }
+    const appointments = await db.appointment.findMany({
+      where: { userId },
+      include: {
+        product: true,
+        user: true,
+      },
+    });
+
+    return appointments;
   }
 
   async createUserAppointment(data: AppointmentProps, productId: string) {
-    try {
-      const product = await db.product.findUnique({ where: { id: productId } });
+    const product = await db.product.findUnique({ where: { id: productId } });
 
-      const admin = await db.user.findUnique({
-        where: {
-          email: process.env.ADMIN_EMAIL,
+    if (!product) throw new Error("Produto indisponível");
+
+    const admin = await db.user.findUnique({
+      where: {
+        email: process.env.ADMIN_EMAIL,
+      },
+    });
+
+    if (!admin) throw new Error("Usuário admin não encontrado");
+
+    const existingAppointment = await db.appointment.findFirst({
+      where: { userId: data.userId, productId },
+    });
+
+    if (existingAppointment) throw new Error("Usuário já agendou esse produto");
+
+    const [appointment] = await db.$transaction([
+      db.appointment.create({
+        data: {
+          ...data,
+          phone: encryptedPhone(data.phone),
+          productId,
         },
-      });
+        include: { product: true, user: true },
+      }),
+      db.product.update({
+        where: { id: productId },
+        data: { available: false },
+      }),
+    ]);
 
-      if (!admin) throw new Error("Usuário admin nao encontrado");
+    await sendEmail({
+      from: "onboarding@resend.dev", //Just for now
+      to: admin.email,
+      subject: "Novo agendamento",
+      html: `<p>Um novo agendamento foi realizado pelo usuário ${data.name}</p>`,
+    });
 
-      if (!product) throw new Error("Produto não encontrado");
-      if (!product.available)
-        throw new Error("Produto não disponível no momento");
-
-      const existingAppointment = await db.appointment.findFirst({
-        where: { userId: data.userId, productId },
-      });
-
-      if (existingAppointment)
-        throw new Error("Usuário já agendou esse produto");
-
-      const [appointment] = await db.$transaction([
-        db.appointment.create({
-          data: {
-            ...data,
-            phone: encryptedPhone(data.phone),
-            productId,
-          },
-          include: { product: true, user: true },
-        }),
-        db.product.update({
-          where: { id: productId },
-          data: { available: false },
-        }),
-      ]);
-
-      await sendEmail({
-        from: "onboarding@resend.dev", //Just for now
-        to: admin.email,
-        subject: "Novo agendamento",
-        html: `<p>Um novo agendamento foi realizado pelo usuário ${data.name}</p>`,
-      });
-
-      return appointment;
-    } catch (err) {
-      if (err instanceof Error) throw err;
-      throw new Error("Erro ao criar agendamento");
-    }
+    return appointment;
   }
 
   async updateUserAppointment(id: string, data: UpdateAppointmentProps) {
-    try {
-      const appointment = await db.appointment.findUnique({ where: { id } });
+    const appointment = await db.appointment.findUnique({ where: { id } });
 
-      if (!appointment) throw new Error("Agendamento não encontrado");
+    if (!appointment) throw new Error("Agendamento não encontrado");
 
-      if (appointment.userId !== data.userId)
-        throw new Error("Usuário não autorizado");
+    if (appointment.userId !== data.userId)
+      throw new Error("Usuário não autorizado");
 
-      const updatedAppointment = await db.appointment.update({
-        where: { id },
-        data: {
-          ...data,
-          phone: data.phone ? encryptedPhone(data.phone) : undefined,
-        },
-      });
+    const updatedAppointment = await db.appointment.update({
+      where: { id },
+      data: {
+        ...data,
+        phone: data.phone ? encryptedPhone(data.phone) : undefined,
+      },
+    });
 
-      return updatedAppointment;
-    } catch (err) {
-      if (err instanceof Error) throw err;
-      throw new Error("Erro ao atualizar agendamento");
-    }
+    return updatedAppointment;
   }
 
   async deleteUserAppointment(id: string, userId: string) {
-    try {
-      const appointment = await db.appointment.findUnique({ where: { id } });
+    const appointment = await db.appointment.findUnique({ where: { id } });
 
-      if (!appointment) throw new Error("Agendamento não encontrado");
-      if (userId !== appointment.userId)
-        throw new Error("Usuário não autorizado");
+    if (!appointment) throw new Error("Agendamento não encontrado");
 
-      const [deletedAppointment] = await db.$transaction([
-        db.appointment.delete({ where: { id: appointment.id } }),
-        db.product.update({
-          where: { id: appointment.productId },
-          data: { available: true },
-        }),
-      ]);
+    if (userId !== appointment.userId)
+      throw new Error("Usuário não autorizado");
 
-      return deletedAppointment;
-    } catch (err) {
-      if (err instanceof Error) throw err;
-      throw new Error("Erro ao deletar agendamento");
-    }
+    const [deletedAppointment] = await db.$transaction([
+      db.appointment.delete({ where: { id: appointment.id } }),
+      db.product.update({
+        where: { id: appointment.productId },
+        data: { available: true },
+      }),
+    ]);
+
+    return deletedAppointment;
   }
 }
