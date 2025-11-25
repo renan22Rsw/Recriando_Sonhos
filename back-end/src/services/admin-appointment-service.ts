@@ -3,120 +3,100 @@ import { sendEmail } from "../utils/send-email";
 
 export class AdminAppointmentService {
   async getAdminAppointments(role: string) {
-    try {
-      if (role !== "admin") throw new Error("Acesso negado");
+    if (role !== "admin") throw new Error("Acesso negado");
 
-      const appointments = await db.appointment.findMany({
-        where: {
-          user: {
-            role: "user",
-          },
+    const appointments = await db.appointment.findMany({
+      where: {
+        user: {
+          role: "user",
         },
-      });
+      },
+    });
 
-      if (!appointments || appointments.length === 0)
-        throw new Error("Agendamentos não encontrados");
+    if (!appointments || appointments.length === 0)
+      throw new Error("Agendamentos não encontrados");
 
-      return appointments;
-    } catch (err) {
-      if (err instanceof Error) throw err;
-      throw new Error("Erro ao buscar agendamentos");
-    }
+    return appointments;
   }
 
   async confirmUserAppointmentStatus(role: string, id: string) {
-    try {
-      if (role !== "admin") throw new Error("Acesso negado");
+    if (role !== "admin") throw new Error("Acesso negado");
 
-      const appointment = await db.appointment.findUnique({
-        where: {
-          id,
-        },
-      });
+    const appointment = await db.appointment.findUnique({
+      where: {
+        id,
+      },
+    });
 
-      if (!appointment) throw new Error("Agendamento não encontrado");
+    if (!appointment) throw new Error("Agendamento não encontrado");
 
-      await db.appointment.update({
-        where: { id: appointment.id },
-        data: { status: "confirmed" },
-      });
+    await db.appointment.update({
+      where: { id: appointment.id },
+      data: { status: "confirmed" },
+    });
 
-      await sendEmail({
-        from: "onboarding@resend.dev", // just for now
-        to: appointment.email,
-        subject: "Agendamento confirmado",
-        html: `Ola, ${appointment.name}. Seu agendamento foi confirmado!`,
-      });
-    } catch (err) {
-      if (err instanceof Error) throw err;
-      throw new Error("Erro ao confirmar agendamento");
-    }
+    await sendEmail({
+      from: "onboarding@resend.dev", // just for now
+      to: appointment.email,
+      subject: "Agendamento confirmado",
+      html: `Ola, ${appointment.name}. Seu agendamento foi confirmado!`,
+    });
   }
 
   async cancelUserAppointmentStatus(role: string, id: string) {
-    try {
-      if (role !== "admin") throw new Error("Acesso negado");
+    if (role !== "admin") throw new Error("Acesso negado");
 
-      const appointment = await db.appointment.findUnique({
-        where: {
-          id,
-        },
-      });
+    const appointment = await db.appointment.findUnique({
+      where: {
+        id,
+      },
+    });
 
-      if (!appointment) throw new Error("Agendamento não encontrado");
+    if (!appointment) throw new Error("Agendamento não encontrado");
 
-      const [cancelledUserAppointment] = await db.$transaction([
-        db.appointment.update({
-          where: { id: appointment.id },
-          data: { status: "cancelled" },
-        }),
+    const [cancelledUserAppointment] = await db.$transaction([
+      db.appointment.update({
+        where: { id: appointment.id },
+        data: { status: "cancelled" },
+      }),
 
-        db.product.update({
-          where: { id: appointment.productId },
-          data: { available: true },
-        }),
-      ]);
+      db.product.update({
+        where: { id: appointment.productId },
+        data: { available: true },
+      }),
+    ]);
 
-      await sendEmail({
-        from: "onboarding@resend.dev", // just for now
-        to: appointment.email,
-        subject: "Agendamento negado",
-        html: `Ola, ${appointment.name}. Seu agendamento foi negado!`,
-      });
+    await sendEmail({
+      from: "onboarding@resend.dev", // just for now
+      to: appointment.email,
+      subject: "Agendamento negado",
+      html: `Ola, ${appointment.name}. Seu agendamento foi negado!`,
+    });
 
-      return cancelledUserAppointment;
-    } catch (err) {
-      if (err instanceof Error) throw err;
-      throw new Error("Erro ao cancelar agendamento");
-    }
+    return cancelledUserAppointment;
   }
 
   async deleteAppointmentFromUser(role: string, id: string) {
-    try {
-      if (role !== "admin") throw new Error("Acesso negado");
+    if (role !== "admin") throw new Error("Acesso negado");
 
-      const appointment = await db.appointment.findUnique({
-        where: {
-          id,
-        },
-      });
+    const appointment = await db.appointment.findUnique({
+      where: {
+        id,
+      },
+    });
 
-      if (!appointment) throw new Error("Agendamento não encontrado");
+    if (!appointment) throw new Error("Agendamento não encontrado");
 
-      const [deletedUserAppointment] = await db.$transaction([
-        db.appointment.delete({
-          where: { id: appointment.id },
-        }),
-        db.product.update({
-          where: { id: appointment.productId },
-          data: { available: true },
-        }),
-      ]);
+    const [deletedUserAppointment] = await db.$transaction([
+      db.appointment.delete({
+        where: { id: appointment.id },
+      }),
+      db.product.update({
+        where: { id: appointment.productId },
+        data: { available: true },
+      }),
+    ]);
 
-      return deletedUserAppointment;
-    } catch (err) {
-      if (err instanceof Error) throw err;
-      throw new Error("Erro ao deletar agendamento");
-    }
+    return deletedUserAppointment;
   }
 }
