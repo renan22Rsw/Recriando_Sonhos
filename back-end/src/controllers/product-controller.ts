@@ -17,7 +17,7 @@ export class ProductController {
       if (err instanceof Error) {
         return reply.status(400).send({ message: err.message });
       }
-      return reply.status(500).send({ message: "Erro interno do servidor" });
+      return reply.status(500).send({ message: "Error interno do servidor" });
     }
   }
 
@@ -35,7 +35,7 @@ export class ProductController {
       if (err instanceof Error) {
         return reply.status(400).send({ message: err.message });
       }
-      return reply.status(500).send({ message: "Erro interno do servidor" });
+      return reply.status(500).send({ message: "Error interno do servidor" });
     }
   }
 
@@ -47,7 +47,9 @@ export class ProductController {
       const productImageUrl = await uploadProductImage(parts, formData);
 
       if (!productImageUrl) {
-        return reply.status(400).send("Nenhuma imagem foi enviada");
+        return reply.status(400).send({
+          message: "Nenhuma imagem foi enviada",
+        });
       }
 
       const { title, description, price, available } =
@@ -66,7 +68,7 @@ export class ProductController {
       if (err instanceof Error) {
         return reply.status(400).send({ message: err.message });
       }
-      return reply.status(500).send({ message: "Erro interno do servidor" });
+      return reply.status(500).send({ message: "Error interno do servidor" });
     }
   }
 
@@ -85,7 +87,9 @@ export class ProductController {
       });
 
       if (!oldProductImage) {
-        return reply.status(404).send("Produto nao encontrado");
+        return reply.status(404).send({
+          message: "Produto não encontrado",
+        });
       }
 
       const { title, description, price, available } =
@@ -109,7 +113,7 @@ export class ProductController {
       if (error instanceof Error) {
         return reply.status(400).send({ message: error.message });
       }
-      return reply.status(500).send({ message: "Erro interno do servidor" });
+      return reply.status(500).send({ message: "Error interno do servidor" });
     }
   }
 
@@ -126,7 +130,7 @@ export class ProductController {
       if (err instanceof Error) {
         return reply.status(400).send({ message: err.message });
       }
-      return reply.status(500).send({ message: "Erro interno do servidor" });
+      return reply.status(500).send({ message: "Error interno do servidor" });
     }
   }
 }
