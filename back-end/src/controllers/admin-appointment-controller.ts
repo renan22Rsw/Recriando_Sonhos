@@ -28,10 +28,10 @@ export class AdminAppointmentController {
       return reply.status(200).send(appointments);
     } catch (err) {
       if (err instanceof Error) {
-        return reply.status(400).send({ error: err.message });
+        return reply.status(400).send({ message: err.message });
       }
 
-      return reply.status(500).send({ error: "Erro interno do servidor" });
+      return reply.status(500).send({ message: "Error interno do servidor" });
     }
   }
 
@@ -53,10 +53,10 @@ export class AdminAppointmentController {
         .send({ message: "Agendamento confirmado com sucesso" });
     } catch (err) {
       if (err instanceof Error) {
-        return reply.status(400).send({ error: err.message });
+        return reply.status(400).send({ message: err.message });
       }
 
-      return reply.status(500).send({ error: "Erro interno do servidor" });
+      return reply.status(500).send({ message: "Error interno do servidor" });
     }
   }
 
@@ -75,10 +75,10 @@ export class AdminAppointmentController {
         .send({ message: "Agendamento cancelado com sucesso" });
     } catch (err) {
       if (err instanceof Error) {
-        return reply.status(400).send({ error: err.message });
+        return reply.status(400).send({ message: err.message });
       }
 
-      return reply.status(500).send({ error: "Erro interno do servidor" });
+      return reply.status(500).send({ message: "Error interno do servidor" });
     }
   }
 
@@ -100,10 +100,10 @@ export class AdminAppointmentController {
         .send({ message: "Agendamento deletados com sucesso" });
     } catch (err) {
       if (err instanceof Error) {
-        return reply.status(400).send({ error: err.message });
+        return reply.status(400).send({ message: err.message });
       }
 
-      return reply.status(500).send({ error: "Erro interno do servidor" });
+      return reply.status(500).send({ message: "Error interno do servidor" });
     }
   }
 }
