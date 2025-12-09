@@ -12,18 +12,21 @@ export const adminMiddleware = async (
     });
 
     if (!session?.user) {
-      return reply.status(401).send("You are not authenticated");
+      return reply.status(401).send({
+        message: "You are not authenticated",
+      });
     }
 
     if (session?.user.role !== "admin") {
-      return reply.status(403).send("You are not authorized");
+      return reply.status(403).send({
+        message: "You are not authorized",
+      });
     }
 
     request.user = session.user;
   } catch (err) {
     return reply.status(500).send({
       message: "Internal server error",
-      error: err,
     });
   }
 };

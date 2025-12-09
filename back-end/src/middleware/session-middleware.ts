@@ -29,7 +29,6 @@ export const sessionMiddleware = async (
   } catch (err) {
     return reply.status(500).send({
       message: "Internal server error",
-      error: err,
     });
   }
 };
