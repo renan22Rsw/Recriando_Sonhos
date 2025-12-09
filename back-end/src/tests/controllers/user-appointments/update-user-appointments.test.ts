@@ -32,7 +32,7 @@ describe("update user appointment", () => {
       email: "test2@gmail.com",
       name: "Test 2",
       phone: "21999999999",
-      date: "2025-12-06T15:00:00.000Z",
+      date: "2050-01-01T15:00:00.000Z",
     },
   };
 

@@ -32,7 +32,7 @@ describe("create user appointments", () => {
       email: "test@gmail.com",
       name: "Test",
       phone: "21999999999",
-      date: "2025-12-06T15:00:00.000Z", //only works on saturdays and sundays, and it must be higher than the current date
+      date: "2050-01-01T15:00:00.000Z", //only works on saturdays and sundays, and it must be higher than the current date
     },
   };
 
