@@ -33,6 +33,6 @@ export const sendEmail = async ({
 
     console.log("Message send: %s", info.messageId);
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 };
