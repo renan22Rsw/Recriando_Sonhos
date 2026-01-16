@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { auth } from "../../lib/auth";
-import { Session } from "better-auth/types";
 import { adminMiddleware } from "../../middleware/admin-middleware";
 
 describe("Admin Middleware", () => {
@@ -20,12 +19,28 @@ describe("Admin Middleware", () => {
     vi.clearAllMocks();
   });
 
+  type GetSessionResponse = Awaited<ReturnType<typeof auth.api.getSession>>;
+
   it("should return 200 if user is a admin", async () => {
-    const session: Session = {
+    const session: GetSessionResponse = {
+      session: {
+        id: "1",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        userId: "1",
+        expiresAt: new Date(),
+        token: "token",
+      },
+
       user: {
         id: "2",
+        name: "Test 2",
         email: "test2@gmail.com",
         role: "admin",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        emailVerified: true,
+        banned: false,
       },
     };
 
@@ -51,11 +66,25 @@ describe("Admin Middleware", () => {
   });
 
   it("should return 403 if user is not a admin", async () => {
-    const session: Session = {
+    const session: GetSessionResponse = {
+      session: {
+        id: "1",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        userId: "1",
+        expiresAt: new Date(),
+        token: "token",
+      },
+
       user: {
-        id: "3",
-        email: "test3@gmail.com",
+        id: "2",
+        name: "Test 2",
+        email: "test2@gmail.com",
         role: "user",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        emailVerified: true,
+        banned: false,
       },
     };
 

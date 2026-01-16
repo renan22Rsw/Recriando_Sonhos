@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { auth } from "../../lib/auth";
-import { Session } from "better-auth/types";
 import { sessionMiddleware } from "../../middleware/session-middleware";
 
 describe("Session Middleware", () => {
@@ -20,11 +19,28 @@ describe("Session Middleware", () => {
     vi.clearAllMocks();
   });
 
+  type GetSessionResponse = Awaited<ReturnType<typeof auth.api.getSession>>;
+
   it("should return 200 if session is valid", async () => {
-    const session: Session = {
+    const session: GetSessionResponse = {
+      session: {
+        id: "1",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        userId: "1",
+        expiresAt: new Date(),
+        token: "token",
+      },
+
       user: {
         id: "1",
+        name: "user test",
         email: "useremail@test.com",
+        role: "user",
+        emailVerified: true,
+        banned: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
     };
 
