@@ -11,6 +11,8 @@ import {
 import { sendEmail } from "../../../utils/send-email";
 import { encryptedPhone } from "../../../utils/encryptedPhone";
 
+import { AppointmentStatus } from "@prisma/client";
+
 vi.mock("../../../database/index", () => ({
   db: {
     product: {
@@ -61,6 +63,7 @@ describe("create user appointment and send email to adm", () => {
         ...createUserAppointmentMock,
         userId: userMock.id,
         productId: productMock.id,
+        status: AppointmentStatus.PENDING,
       },
       productMock.id
     );

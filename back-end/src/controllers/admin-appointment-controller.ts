@@ -65,14 +65,14 @@ export class AdminAppointmentController {
       const adminRole = await this.getAdminRole(request);
       const { id } = request.params as { id: string };
 
-      await this.adminAppointmentService.cancelUserAppointmentStatus(
+      await this.adminAppointmentService.rejectUserAppointmentStatus(
         adminRole,
         id
       );
 
       return reply
         .status(200)
-        .send({ message: "Agendamento cancelado com sucesso" });
+        .send({ message: "Agendamento rejeitado com sucesso" });
     } catch (err) {
       if (err instanceof Error) {
         return reply.status(400).send({ message: err.message });

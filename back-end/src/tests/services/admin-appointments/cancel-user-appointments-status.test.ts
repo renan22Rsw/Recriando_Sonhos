@@ -5,6 +5,8 @@ import { sendEmail } from "../../../utils/send-email";
 import { userAppointmentMock } from "../../mocks/user-appointment-mocks";
 import { updateProductMock } from "../../mocks/product-mocks";
 
+import { AppointmentStatus } from "@prisma/client";
+
 vi.mock("../../../database/index", () => ({
   db: {
     appointment: {
@@ -40,7 +42,7 @@ describe("update user appointments status to canceled", () => {
     ]);
 
     const appointment =
-      await adminAppointmentService.cancelUserAppointmentStatus(
+      await adminAppointmentService.rejectUserAppointmentStatus(
         "admin",
         userAppointmentMock.id
       );
@@ -50,7 +52,7 @@ describe("update user appointments status to canceled", () => {
 
     expect(db.appointment.update).toHaveBeenCalledWith({
       where: { id: userAppointmentMock.id },
-      data: { status: "cancelled" },
+      data: { status: AppointmentStatus.REJECTED },
     });
 
     expect(db.product.update).toHaveBeenCalledWith({
@@ -61,14 +63,14 @@ describe("update user appointments status to canceled", () => {
     expect(sendEmail).toHaveBeenCalledWith({
       from: "onboarding@resend.dev", // just for now
       to: userAppointmentMock.email,
-      subject: "Agendamento negado",
-      html: `Ola, ${userAppointmentMock.name}. Seu agendamento foi negado!`,
+      subject: "Agendamento rejeitado",
+      html: `Ola, ${userAppointmentMock.name}. Seu agendamento foi rejeitado!`,
     });
   });
 
   it("should throw an error if role is not admin", async () => {
     await expect(
-      adminAppointmentService.cancelUserAppointmentStatus(
+      adminAppointmentService.rejectUserAppointmentStatus(
         "user",
         userAppointmentMock.id
       )
@@ -82,7 +84,7 @@ describe("update user appointments status to canceled", () => {
     (db.appointment.findUnique as Mock).mockResolvedValue(null);
 
     await expect(
-      adminAppointmentService.cancelUserAppointmentStatus(
+      adminAppointmentService.rejectUserAppointmentStatus(
         "admin",
         userAppointmentMock.id
       )
@@ -98,7 +100,7 @@ describe("update user appointments status to canceled", () => {
     );
 
     await expect(
-      adminAppointmentService.cancelUserAppointmentStatus(
+      adminAppointmentService.rejectUserAppointmentStatus(
         "admin",
         userAppointmentMock.id
       )

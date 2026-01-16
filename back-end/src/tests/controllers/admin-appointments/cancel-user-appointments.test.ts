@@ -50,7 +50,7 @@ describe("Cancel user appointment", () => {
       },
     });
 
-    adminAppointmentService.cancelUserAppointmentStatus = vi
+    adminAppointmentService.rejectUserAppointmentStatus = vi
       .fn()
       .mockResolvedValue(userAppointmentMock);
 
@@ -60,7 +60,7 @@ describe("Cancel user appointment", () => {
     );
 
     expect(mockReply.send).toHaveBeenCalledWith({
-      message: "Agendamento cancelado com sucesso",
+      message: "Agendamento rejeitado com sucesso",
     });
 
     expect(mockReply.status).toHaveBeenCalledWith(200);
@@ -74,7 +74,7 @@ describe("Cancel user appointment", () => {
       },
     });
 
-    adminAppointmentService.cancelUserAppointmentStatus = vi
+    adminAppointmentService.rejectUserAppointmentStatus = vi
       .fn()
       .mockRejectedValueOnce(new Error("Error"));
 
@@ -97,7 +97,7 @@ describe("Cancel user appointment", () => {
       },
     });
 
-    adminAppointmentService.cancelUserAppointmentStatus = vi
+    adminAppointmentService.rejectUserAppointmentStatus = vi
       .fn()
       .mockRejectedValue("Error interno do servidor");
 

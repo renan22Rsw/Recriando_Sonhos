@@ -5,7 +5,7 @@ import {
 } from "../types/appointment-types";
 import { encryptedPhone } from "../utils/encryptedPhone";
 import { sendEmail } from "../utils/send-email";
-
+import { AppointmentStatus } from "@prisma/client";
 export class UserAppointmentService {
   async getUserAppointments(userId: string) {
     if (!userId) throw new Error("Usuário nao encontrado");
@@ -45,6 +45,7 @@ export class UserAppointmentService {
         data: {
           ...data,
           phone: encryptedPhone(data.phone),
+          status: AppointmentStatus.PENDING,
           productId,
         },
         include: { product: true, user: true },
@@ -83,6 +84,8 @@ export class UserAppointmentService {
 
     return updatedAppointment;
   }
+
+  //cancel
 
   async deleteUserAppointment(id: string, userId: string) {
     const appointment = await db.appointment.findUnique({ where: { id } });

@@ -1,5 +1,6 @@
 import { db } from "../database";
 import { sendEmail } from "../utils/send-email";
+import { AppointmentStatus } from "@prisma/client";
 
 export class AdminAppointmentService {
   async getAdminAppointments(role: string) {
@@ -32,7 +33,7 @@ export class AdminAppointmentService {
 
     await db.appointment.update({
       where: { id: appointment.id },
-      data: { status: "confirmed" },
+      data: { status: AppointmentStatus.CONFIRMED },
     });
 
     await sendEmail({
@@ -43,7 +44,7 @@ export class AdminAppointmentService {
     });
   }
 
-  async cancelUserAppointmentStatus(role: string, id: string) {
+  async rejectUserAppointmentStatus(role: string, id: string) {
     if (role !== "admin") throw new Error("Acesso negado");
 
     const appointment = await db.appointment.findUnique({
@@ -57,7 +58,7 @@ export class AdminAppointmentService {
     const [cancelledUserAppointment] = await db.$transaction([
       db.appointment.update({
         where: { id: appointment.id },
-        data: { status: "cancelled" },
+        data: { status: AppointmentStatus.REJECTED },
       }),
 
       db.product.update({
@@ -69,8 +70,8 @@ export class AdminAppointmentService {
     await sendEmail({
       from: "onboarding@resend.dev", // just for now
       to: appointment.email,
-      subject: "Agendamento negado",
-      html: `Ola, ${appointment.name}. Seu agendamento foi negado!`,
+      subject: "Agendamento rejeitado",
+      html: `Ola, ${appointment.name}. Seu agendamento foi rejeitado!`,
     });
 
     return cancelledUserAppointment;

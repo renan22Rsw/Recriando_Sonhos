@@ -99,7 +99,7 @@ model Appointment {
   name      String
   phone     String
   date      DateTime
-  status    String   @default("pending")
+  status    AppointmentStatus  @default(PENDING)
   productId String
   userId    String
   createdAt DateTime @default(now())
@@ -121,4 +121,11 @@ model MessageLog {
   via            String   @default("whatsapp")
 
   appointment Appointment @relation(fields: [appointmentId], references: [id])
+}
+
+enum AppointmentStatus {
+  CONFIRMED  
+  PENDING   
+  CANCELED  
+  REJECTED   
 }

@@ -4,7 +4,7 @@ export const userAppointmentMock = {
   name: "User",
   phone: "21999999999",
   date: new Date(),
-  status: "pending",
+  status: "PENDING",
   productId: "1",
   userId: "1",
 };
@@ -15,7 +15,7 @@ export const createUserAppointmentMock = {
   name: "User",
   phone: "21999999999",
   date: new Date(),
-  status: "pending",
+  status: "PENDING",
   productId: "1",
   userId: "1",
 };
@@ -26,7 +26,7 @@ export const updateUserAppointmentMock = {
   name: "User2",
   phone: "21999999999",
   date: new Date(),
-  status: "pending",
+  status: "PENDING",
   productId: "1",
   userId: "1",
 };

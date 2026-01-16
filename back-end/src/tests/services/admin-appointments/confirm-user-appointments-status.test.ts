@@ -4,6 +4,8 @@ import { db } from "../../../database/index";
 import { sendEmail } from "../../../utils/send-email";
 import { userAppointmentMock } from "../../mocks/user-appointment-mocks";
 
+import { AppointmentStatus } from "@prisma/client";
+
 vi.mock("../../../database/index", () => ({
   db: {
     appointment: {
@@ -40,7 +42,7 @@ describe("uptade user appointments status to confirmed", () => {
     expect(db.appointment.findUnique).toHaveBeenCalled();
     expect(db.appointment.update).toHaveBeenCalledWith({
       where: { id: userAppointmentMock.id },
-      data: { status: "confirmed" },
+      data: { status: AppointmentStatus.CONFIRMED },
     });
 
     expect(sendEmail).toHaveBeenCalledWith({
