@@ -1,8 +1,9 @@
 import { beforeEach, vi, describe, it, expect, Mock } from "vitest";
 import { UserAppointmentService } from "../../../services/user-appointment-service";
 import { db } from "../../../database/index";
-import { productMock, updateProductMock } from "../../mocks/product-mocks";
+import { productMock } from "../../mocks/product-mocks";
 import { userMock } from "../../mocks/user-mock";
+import { adminMock } from "../../mocks/admin-mock";
 import {
   createUserAppointmentMock,
   userAppointmentMock,
@@ -20,15 +21,13 @@ vi.mock("../../../database/index", () => ({
       update: vi.fn(),
     },
     user: {
-      findUnique: vi.fn(),
+      findFirst: vi.fn(),
     },
     appointment: {
       findFirst: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
     },
-
-    $transaction: vi.fn(),
   },
 }));
 
@@ -50,13 +49,11 @@ describe("create user appointment and send email to adm", () => {
 
   it("should create an user aappointment", async () => {
     (db.product.findUnique as Mock).mockResolvedValue(productMock);
-    (db.user.findUnique as Mock).mockResolvedValue(userMock);
+    (db.user.findFirst as Mock).mockResolvedValue(adminMock);
     (db.appointment.findFirst as Mock).mockResolvedValue(null);
-
-    (db.$transaction as Mock).mockResolvedValue([
-      createUserAppointmentMock,
-      updateProductMock,
-    ]);
+    (db.appointment.create as Mock).mockResolvedValue(
+      createUserAppointmentMock
+    );
 
     const appointment = await userAppointmentService.createUserAppointment(
       {
@@ -70,9 +67,7 @@ describe("create user appointment and send email to adm", () => {
 
     expect(appointment).toEqual(createUserAppointmentMock);
     expect(db.product.findUnique).toHaveBeenCalled();
-    expect(db.user.findUnique).toHaveBeenCalled();
     expect(db.appointment.findFirst).toHaveBeenCalled();
-    expect(db.$transaction).toHaveBeenCalled();
 
     expect(db.appointment.create).toHaveBeenCalledWith({
       data: {
@@ -83,16 +78,11 @@ describe("create user appointment and send email to adm", () => {
       include: { product: true, user: true },
     });
 
-    expect(db.product.update).toHaveBeenCalledWith({
-      where: { id: productMock.id },
-      data: { available: false },
-    });
-
     expect(encryptedPhone).toHaveBeenCalledWith(userAppointmentMock.phone);
 
     expect(sendEmail).toHaveBeenCalledWith({
       from: "onboarding@resend.dev", //Just for now
-      to: userMock.email,
+      to: adminMock.email,
       subject: "Novo agendamento",
       html: `<p>Um novo agendamento foi realizado pelo usuário ${userMock.name}</p>`,
     });
@@ -112,15 +102,13 @@ describe("create user appointment and send email to adm", () => {
       )
     ).rejects.toThrow("Produto indisponível");
 
-    expect(db.user.findUnique).not.toHaveBeenCalled();
     expect(db.appointment.findFirst).not.toHaveBeenCalled();
-    expect(db.$transaction).not.toHaveBeenCalled();
     expect(sendEmail).not.toHaveBeenCalled();
   });
 
   it("should not create an user appointment if user already has an appointment", async () => {
     (db.product.findUnique as Mock).mockResolvedValue(productMock);
-    (db.user.findUnique as Mock).mockResolvedValue(userMock);
+    (db.user.findFirst as Mock).mockResolvedValue(adminMock);
     (db.appointment.findFirst as Mock).mockResolvedValue(userAppointmentMock);
 
     await expect(
@@ -134,13 +122,12 @@ describe("create user appointment and send email to adm", () => {
       )
     ).rejects.toThrow("Usuário já agendou esse produto");
 
-    expect(db.$transaction).not.toHaveBeenCalled();
     expect(sendEmail).not.toHaveBeenCalled();
   });
 
   it("should not create an user appointment if admin does not exist", async () => {
     (db.product.findUnique as Mock).mockResolvedValue(productMock);
-    (db.user.findUnique as Mock).mockResolvedValue(null);
+    (db.user.findFirst as Mock).mockResolvedValue(null);
 
     await expect(
       userAppointmentService.createUserAppointment(
@@ -153,7 +140,7 @@ describe("create user appointment and send email to adm", () => {
     ).rejects.toThrow("Usuário admin não encontrado");
 
     expect(db.appointment.findFirst).not.toHaveBeenCalled();
-    expect(db.$transaction).not.toHaveBeenCalled();
+    expect(db.appointment.create).not.toHaveBeenCalled();
     expect(sendEmail).not.toHaveBeenCalled();
   });
 
@@ -173,9 +160,8 @@ describe("create user appointment and send email to adm", () => {
       )
     ).rejects.toThrow("Database error");
 
-    expect(db.user.findUnique).not.toHaveBeenCalled();
+    expect(db.user.findFirst).not.toHaveBeenCalled();
     expect(db.appointment.findFirst).not.toHaveBeenCalled();
-    expect(db.$transaction).not.toHaveBeenCalled();
     expect(sendEmail).not.toHaveBeenCalled();
   });
 });
