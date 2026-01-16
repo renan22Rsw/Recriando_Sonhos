@@ -33,6 +33,14 @@ export const userAppointmentsRoutes = (app: FastifyInstance) => {
     }
   );
 
+  app.put(
+    "/user/appointments/:appointmentId/cancel",
+    { preHandler: sessionMiddleware },
+    async (request, reply) => {
+      return userAppointmentController.cancelUserAppointment(request, reply);
+    }
+  );
+
   app.delete(
     "/user/appointments/:appointmentId",
     { preHandler: sessionMiddleware },

@@ -26,9 +26,9 @@ export class UserAppointmentService {
 
     if (!product) throw new Error("Produto indisponível");
 
-    const admin = await db.user.findUnique({
+    const admin = await db.user.findFirst({
       where: {
-        email: process.env.ADMIN_EMAIL,
+        role: "admin",
       },
     });
 
@@ -40,21 +40,15 @@ export class UserAppointmentService {
 
     if (existingAppointment) throw new Error("Usuário já agendou esse produto");
 
-    const [appointment] = await db.$transaction([
-      db.appointment.create({
-        data: {
-          ...data,
-          phone: encryptedPhone(data.phone),
-          status: AppointmentStatus.PENDING,
-          productId,
-        },
-        include: { product: true, user: true },
-      }),
-      db.product.update({
-        where: { id: productId },
-        data: { available: false },
-      }),
-    ]);
+    const appointment = await db.appointment.create({
+      data: {
+        ...data,
+        phone: encryptedPhone(data.phone),
+        status: AppointmentStatus.PENDING,
+        productId,
+      },
+      include: { product: true, user: true },
+    });
 
     await sendEmail({
       from: "onboarding@resend.dev", //Just for now
@@ -86,6 +80,39 @@ export class UserAppointmentService {
   }
 
   //cancel
+
+  async cancelUserAppointment(id: string, userId: string) {
+    const appointment = await db.appointment.findUnique({ where: { id } });
+
+    if (!appointment) throw new Error("Agendamento não encontrado");
+
+    if (appointment.userId !== userId)
+      throw new Error("Usuário não autorizado");
+
+    if (appointment.status === AppointmentStatus.CANCELED)
+      throw new Error("Agendamento já foi cancelado");
+
+    // Se estava confirmado, libera o produto
+    if (appointment.status === AppointmentStatus.CONFIRMED) {
+      const [canceledAppointment] = await db.$transaction([
+        db.appointment.update({
+          where: { id },
+          data: { status: AppointmentStatus.CANCELED },
+        }),
+        db.product.update({
+          where: { id: appointment.productId },
+          data: { available: true },
+        }),
+      ]);
+
+      return canceledAppointment;
+    }
+
+    return db.appointment.update({
+      where: { id },
+      data: { status: AppointmentStatus.CANCELED },
+    });
+  }
 
   async deleteUserAppointment(id: string, userId: string) {
     const appointment = await db.appointment.findUnique({ where: { id } });

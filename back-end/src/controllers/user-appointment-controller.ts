@@ -88,6 +88,29 @@ export class UserAppointmentController {
     }
   }
 
+  async cancelUserAppointment(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const { appointmentId } = request.params as { appointmentId: string };
+
+      const userId = await this.getUserId(request);
+
+      await this.userAppointmentService.cancelUserAppointment(
+        appointmentId,
+        userId
+      );
+
+      return reply
+        .status(200)
+        .send({ message: "Agendamento cancelado com sucesso" });
+    } catch (err) {
+      if (err instanceof Error) {
+        return reply.status(400).send({ message: err.message });
+      }
+
+      return reply.status(500).send({ message: "Error interno do servidor" });
+    }
+  }
+
   async deleteUserAppointment(request: FastifyRequest, reply: FastifyReply) {
     try {
       const userId = await this.getUserId(request);

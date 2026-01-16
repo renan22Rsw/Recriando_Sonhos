@@ -52,6 +52,10 @@ export const auth = betterAuth({
 
   plugins: [admin()],
 
+  advanced: {
+    disableOriginCheck: true,
+  },
+
   trustedOrigins: [process.env.ORIGIN_URL as string],
   secret: process.env.BETTER_AUTH_SECRET,
 });
