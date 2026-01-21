@@ -82,19 +82,27 @@ export class UserAppointmentService {
   //cancel
 
   async cancelUserAppointment(id: string, userId: string) {
+    const admin = await db.user.findFirst({
+      where: {
+        role: "admin",
+      },
+    });
+
+    if (!admin) throw new Error("Usuário admin não encontrado");
+
     const appointment = await db.appointment.findUnique({ where: { id } });
 
     if (!appointment) throw new Error("Agendamento não encontrado");
 
-    if (appointment.userId !== userId)
-      throw new Error("Usuário não autorizado");
-
     if (appointment.status === AppointmentStatus.CANCELED)
       throw new Error("Agendamento já foi cancelado");
 
+    if (appointment.userId !== userId)
+      throw new Error("Usuário não autorizado");
+
     // Se estava confirmado, libera o produto
     if (appointment.status === AppointmentStatus.CONFIRMED) {
-      const [canceledAppointment] = await db.$transaction([
+      await db.$transaction([
         db.appointment.update({
           where: { id },
           data: { status: AppointmentStatus.CANCELED },
@@ -104,13 +112,18 @@ export class UserAppointmentService {
           data: { available: true },
         }),
       ]);
-
-      return canceledAppointment;
+    } else {
+      await db.appointment.update({
+        where: { id },
+        data: { status: AppointmentStatus.CANCELED },
+      });
     }
 
-    return db.appointment.update({
-      where: { id },
-      data: { status: AppointmentStatus.CANCELED },
+    await sendEmail({
+      from: "onboarding@resend.dev", //Just for now
+      to: admin.email,
+      subject: "Agendamento cancelado",
+      html: `<p>Um agendamento foi cancelado pelo usuário ${appointment.name}</p>`,
     });
   }
 
@@ -122,13 +135,7 @@ export class UserAppointmentService {
     if (userId !== appointment.userId)
       throw new Error("Usuário não autorizado");
 
-    const [deletedAppointment] = await db.$transaction([
-      db.appointment.delete({ where: { id: appointment.id } }),
-      db.product.update({
-        where: { id: appointment.productId },
-        data: { available: true },
-      }),
-    ]);
+    const deletedAppointment = await db.appointment.delete({ where: { id } });
 
     return deletedAppointment;
   }

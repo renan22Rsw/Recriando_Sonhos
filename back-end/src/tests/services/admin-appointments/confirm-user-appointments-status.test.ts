@@ -5,6 +5,7 @@ import { sendEmail } from "../../../utils/send-email";
 import { userAppointmentMock } from "../../mocks/user-appointment-mocks";
 
 import { AppointmentStatus } from "@prisma/client";
+import { productMock } from "../../mocks/product-mocks";
 
 vi.mock("../../../database/index", () => ({
   db: {
@@ -12,6 +13,12 @@ vi.mock("../../../database/index", () => ({
       findUnique: vi.fn(),
       update: vi.fn(),
     },
+
+    product: {
+      update: vi.fn(),
+    },
+
+    $transaction: vi.fn(),
   },
 }));
 
@@ -29,21 +36,31 @@ describe("uptade user appointments status to confirmed", () => {
 
   it("should confirm user appointments status and send email to user", async () => {
     (db.appointment.findUnique as Mock).mockResolvedValue(userAppointmentMock);
-    (db.appointment.update as Mock).mockResolvedValue({
-      ...userAppointmentMock,
-      status: "confirmed",
-    });
+    (db.$transaction as Mock).mockResolvedValue([
+      {
+        ...userAppointmentMock,
+        status: AppointmentStatus.CONFIRMED,
+      },
+      productMock,
+    ]);
 
-    await adminAppointmentService.confirmUserAppointmentStatus(
+    const result = await adminAppointmentService.confirmUserAppointmentStatus(
       "admin",
-      userAppointmentMock.id
+      userAppointmentMock.id,
     );
 
-    expect(db.appointment.findUnique).toHaveBeenCalled();
-    expect(db.appointment.update).toHaveBeenCalledWith({
-      where: { id: userAppointmentMock.id },
-      data: { status: AppointmentStatus.CONFIRMED },
-    });
+    expect(result.status).toEqual(AppointmentStatus.CONFIRMED);
+
+    expect(db.$transaction).toHaveBeenCalledWith([
+      db.appointment.update({
+        where: { id: userAppointmentMock.id },
+        data: { status: AppointmentStatus.CONFIRMED },
+      }),
+      db.product.update({
+        where: { id: userAppointmentMock.productId },
+        data: { available: false },
+      }),
+    ]);
 
     expect(sendEmail).toHaveBeenCalledWith({
       from: "onboarding@resend.dev",
@@ -57,42 +74,42 @@ describe("uptade user appointments status to confirmed", () => {
     await expect(
       adminAppointmentService.confirmUserAppointmentStatus(
         "user",
-        userAppointmentMock.id
-      )
+        userAppointmentMock.id,
+      ),
     ).rejects.toThrow("Acesso negado");
 
     expect(db.appointment.findUnique).not.toHaveBeenCalled();
-    expect(db.appointment.update).not.toHaveBeenCalled();
+    expect(db.$transaction).not.toHaveBeenCalled();
     expect(sendEmail).not.toHaveBeenCalled();
   });
 
-  it("should throw an error if no appointments are found", async () => {
+  it("should throw an error if there is no appointments", async () => {
     (db.appointment.findUnique as Mock).mockResolvedValue(null);
 
     await expect(
       adminAppointmentService.confirmUserAppointmentStatus(
         "admin",
-        userAppointmentMock.id
-      )
+        userAppointmentMock.id,
+      ),
     ).rejects.toThrow("Agendamento não encontrado");
 
-    expect(db.appointment.update).not.toHaveBeenCalled();
+    expect(db.$transaction).not.toHaveBeenCalled();
     expect(sendEmail).not.toHaveBeenCalled();
   });
 
   it("should throw an error if database fails", async () => {
     (db.appointment.findUnique as Mock).mockRejectedValue(
-      new Error("Database error")
+      new Error("Database error"),
     );
 
     await expect(
       adminAppointmentService.confirmUserAppointmentStatus(
         "admin",
-        userAppointmentMock.id
-      )
+        userAppointmentMock.id,
+      ),
     ).rejects.toThrow("Database error");
 
-    expect(db.appointment.update).not.toHaveBeenCalled();
+    expect(db.$transaction).not.toHaveBeenCalled();
     expect(sendEmail).not.toHaveBeenCalled();
   });
 });

@@ -31,10 +31,19 @@ export class AdminAppointmentService {
 
     if (!appointment) throw new Error("Agendamento não encontrado");
 
-    await db.appointment.update({
-      where: { id: appointment.id },
-      data: { status: AppointmentStatus.CONFIRMED },
-    });
+    const [confirmUserAppointment] = await db.$transaction([
+      db.appointment.update({
+        where: { id: appointment.id },
+        data: {
+          status: AppointmentStatus.CONFIRMED,
+        },
+      }),
+
+      db.product.update({
+        where: { id: appointment.productId },
+        data: { available: false },
+      }),
+    ]);
 
     await sendEmail({
       from: "onboarding@resend.dev", // just for now
@@ -42,6 +51,8 @@ export class AdminAppointmentService {
       subject: "Agendamento confirmado",
       html: `Ola, ${appointment.name}. Seu agendamento foi confirmado!`,
     });
+
+    return confirmUserAppointment;
   }
 
   async rejectUserAppointmentStatus(role: string, id: string) {
@@ -88,16 +99,10 @@ export class AdminAppointmentService {
 
     if (!appointment) throw new Error("Agendamento não encontrado");
 
-    const [deletedUserAppointment] = await db.$transaction([
-      db.appointment.delete({
-        where: { id: appointment.id },
-      }),
-      db.product.update({
-        where: { id: appointment.productId },
-        data: { available: true },
-      }),
-    ]);
+    const deletedAppointment = await db.appointment.delete({
+      where: { id: appointment.id },
+    });
 
-    return deletedUserAppointment;
+    return deletedAppointment;
   }
 }

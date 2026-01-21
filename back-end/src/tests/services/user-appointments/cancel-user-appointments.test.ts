@@ -4,9 +4,16 @@ import { db } from "../../../database/index";
 import { userAppointmentMock } from "../../mocks/user-appointment-mocks";
 import { AppointmentStatus } from "@prisma/client";
 import { productMock } from "../../mocks/product-mocks";
+import { userMock } from "../../mocks/user-mock";
+import { adminMock } from "../../mocks/admin-mock";
+import { sendEmail } from "../../../utils/send-email";
 
 vi.mock("../../../database/index", () => ({
   db: {
+    user: {
+      findFirst: vi.fn(),
+    },
+
     appointment: {
       findUnique: vi.fn(),
       update: vi.fn(),
@@ -20,6 +27,10 @@ vi.mock("../../../database/index", () => ({
   },
 }));
 
+vi.mock("../../../utils/send-email", () => ({
+  sendEmail: vi.fn(),
+}));
+
 describe("Cancel user appointments", () => {
   let userAppointmentService: UserAppointmentService;
 
@@ -29,8 +40,9 @@ describe("Cancel user appointments", () => {
   });
 
   it("should cancel user appointment", async () => {
+    (db.user.findFirst as Mock).mockResolvedValue(adminMock);
     (db.appointment.findUnique as unknown as Mock).mockResolvedValue(
-      userAppointmentMock
+      userAppointmentMock,
     );
 
     (db.appointment.update as unknown as Mock).mockResolvedValue({
@@ -38,104 +50,111 @@ describe("Cancel user appointments", () => {
       status: AppointmentStatus.CANCELED,
     });
 
-    const canceledAppointment =
-      await userAppointmentService.cancelUserAppointment(
-        userAppointmentMock.id,
-        userAppointmentMock.userId
-      );
+    await userAppointmentService.cancelUserAppointment(
+      userAppointmentMock.id,
+      userAppointmentMock.userId,
+    );
 
-    expect(canceledAppointment).toEqual({
-      ...userAppointmentMock,
-      status: AppointmentStatus.CANCELED,
-    });
-
-    expect(db.appointment.findUnique).toHaveBeenCalled();
-    expect(db.appointment.update).toHaveBeenCalledWith({
-      where: { id: userAppointmentMock.id },
-      data: { status: AppointmentStatus.CANCELED },
+    expect(sendEmail).toHaveBeenCalledWith({
+      from: "onboarding@resend.dev", //Just for now
+      to: adminMock.email,
+      subject: "Agendamento cancelado",
+      html: `<p>Um agendamento foi cancelado pelo usuário ${userMock.name}</p>`,
     });
   });
 
-  it("should update user appointment status to canceled and only update product available if status is confirmed", async () => {
+  it("should only update product status if appointment is confirmed", async () => {
+    (db.user.findFirst as Mock).mockResolvedValue(adminMock);
     (db.appointment.findUnique as unknown as Mock).mockResolvedValue({
       ...userAppointmentMock,
       status: AppointmentStatus.CONFIRMED,
     });
 
-    (db.$transaction as unknown as Mock).mockResolvedValue([
-      {
-        ...userAppointmentMock,
-        status: AppointmentStatus.CANCELED,
-      },
-
-      {
-        ...productMock,
-        available: true,
-      },
+    (db.$transaction as Mock).mockResolvedValue([
+      userAppointmentMock,
+      productMock,
     ]);
 
-    const canceledAppointment =
-      await userAppointmentService.cancelUserAppointment(
-        userAppointmentMock.id,
-        userAppointmentMock.userId
-      );
-
-    expect(canceledAppointment).toEqual({
-      ...userAppointmentMock,
-      status: AppointmentStatus.CANCELED,
-    });
-
-    expect(db.appointment.findUnique).toHaveBeenCalled();
-    expect(db.$transaction).toHaveBeenCalled();
-
-    expect(db.appointment.update).toHaveBeenCalledWith({
-      where: { id: userAppointmentMock.id },
-      data: { status: AppointmentStatus.CANCELED },
-    });
-    expect(db.product.update).toHaveBeenCalledWith({
-      where: { id: userAppointmentMock.productId },
-      data: { available: true },
-    });
-  });
-
-  it("should not update user appointment status to canceled if status is already canceled", async () => {
-    (db.appointment.findUnique as unknown as Mock).mockResolvedValue({
-      ...userAppointmentMock,
-      status: AppointmentStatus.CANCELED,
-    });
-
-    await expect(
-      userAppointmentService.cancelUserAppointment(
-        userAppointmentMock.id,
-        userAppointmentMock.userId
-      )
-    ).rejects.toThrow("Agendamento já foi cancelado");
-
-    expect(db.appointment.update).not.toHaveBeenCalled();
-  });
-
-  it("should not update user appointment status to canceled if appointment does not exist", async () => {
-    (db.appointment.findUnique as unknown as Mock).mockResolvedValue(null);
-
-    await expect(
-      userAppointmentService.cancelUserAppointment(
-        userAppointmentMock.id,
-        userAppointmentMock.userId
-      )
-    ).rejects.toThrow("Agendamento não encontrado");
-
-    expect(db.appointment.update).not.toHaveBeenCalled();
-  });
-
-  it("should not update user appointment status to canceled if user is not authorized", async () => {
-    (db.appointment.findUnique as unknown as Mock).mockResolvedValue(
-      userAppointmentMock
+    await userAppointmentService.cancelUserAppointment(
+      userAppointmentMock.id,
+      userAppointmentMock.userId,
     );
 
+    expect(db.$transaction).toHaveBeenCalledWith([
+      db.appointment.update({
+        where: { id: userAppointmentMock.id },
+        data: { status: AppointmentStatus.CANCELED },
+      }),
+
+      db.product.update({
+        where: { id: userAppointmentMock.productId },
+        data: { available: true },
+      }),
+    ]);
+
+    expect(sendEmail).toHaveBeenCalledWith({
+      from: "onboarding@resend.dev", //Just for now
+      to: adminMock.email,
+      subject: "Agendamento cancelado",
+      html: `<p>Um agendamento foi cancelado pelo usuário ${userMock.name}</p>`,
+    });
+  });
+
+  it("should throw an error if admin does not exist", async () => {
+    (db.user.findFirst as Mock).mockResolvedValue(null);
     await expect(
-      userAppointmentService.cancelUserAppointment(userAppointmentMock.id, "2")
-    ).rejects.toThrow("Usuário não autorizado");
+      userAppointmentService.cancelUserAppointment(
+        userAppointmentMock.id,
+        userAppointmentMock.userId,
+      ),
+    ).rejects.toThrowError("Usuário admin não encontrado");
 
     expect(db.appointment.update).not.toHaveBeenCalled();
+    expect(sendEmail).not.toHaveBeenCalled();
+  });
+
+  it("should throw an error if appointment does not exist", async () => {
+    (db.user.findFirst as Mock).mockResolvedValue(adminMock);
+    (db.appointment.findUnique as Mock).mockResolvedValue(null);
+
+    await expect(
+      userAppointmentService.cancelUserAppointment(
+        userAppointmentMock.id,
+        userAppointmentMock.userId,
+      ),
+    ).rejects.toThrowError("Agendamento não encontrado");
+
+    expect(db.appointment.update).not.toHaveBeenCalled();
+    expect(sendEmail).not.toHaveBeenCalled();
+  });
+
+  it("should throw an error if user tries to cancel an appointment that is canceled", async () => {
+    (db.user.findFirst as Mock).mockResolvedValue(adminMock);
+    (db.appointment.findUnique as Mock).mockResolvedValue({
+      ...userAppointmentMock,
+      status: AppointmentStatus.CANCELED,
+    });
+
+    await expect(
+      userAppointmentService.cancelUserAppointment(
+        userAppointmentMock.id,
+        userAppointmentMock.userId,
+      ),
+    ).rejects.toThrowError("Agendamento já foi cancelado");
+
+    expect(db.appointment.update).not.toHaveBeenCalled();
+    expect(sendEmail).not.toHaveBeenCalled();
+  });
+
+  it("should throw an error if user tries to cancel an other user's appointment", async () => {
+    (db.user.findFirst as Mock).mockResolvedValue(adminMock);
+    (db.appointment.findUnique as Mock).mockResolvedValue(userAppointmentMock);
+
+    await expect(
+      userAppointmentService.cancelUserAppointment(userAppointmentMock.id, "2"),
+    ).rejects.toThrowError("Usuário não autorizado");
+
+    expect(db.appointment.update).not.toHaveBeenCalled();
+    expect(sendEmail).not.toHaveBeenCalled();
   });
 });
