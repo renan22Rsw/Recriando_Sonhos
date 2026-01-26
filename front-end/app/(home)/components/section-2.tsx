@@ -22,7 +22,7 @@ const prodcuts = [
   },
 ];
 
-const Section2 = () => {
+export const Section2 = () => {
   return (
     <section className="bg-[#F4F3F1]">
       <div className="space-y-4 pt-32 text-center">
@@ -36,7 +36,7 @@ const Section2 = () => {
         </p>
       </div>
 
-      <div className="mx-auto grid gap-8 px-4 py-8 md:grid-cols-2 lg:w-360 lg:grid-cols-3">
+      <div className="mx-auto grid gap-8 px-8 py-8 md:grid-cols-2 lg:w-360 lg:grid-cols-3">
         {prodcuts.map((prodcuts) => (
           <div
             key={prodcuts.id}
@@ -62,5 +62,3 @@ const Section2 = () => {
     </section>
   );
 };
-
-export default Section2;

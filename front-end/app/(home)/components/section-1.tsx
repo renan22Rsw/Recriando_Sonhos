@@ -6,7 +6,7 @@ import UnicornParty from "@/public/unicorn-party.png";
 import SunFlowerParty from "@/public/sunflower-party.png";
 import BithdayParty from "@/public/birthday-party.png";
 
-const Section1 = () => {
+export const Section1 = () => {
   return (
     <section className="mx-auto grid h-150 grid-cols-1 items-center sm:h-220 lg:grid-cols-2 2xl:w-400">
       <div className="container space-y-4 px-6 md:px-4 xl:px-8">
@@ -89,5 +89,3 @@ const Section1 = () => {
     </section>
   );
 };
-
-export default Section1;
