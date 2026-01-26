@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export const DesktopNavbar = () => {
   return (
-    <nav className="text-foreground flex items-center justify-between p-6 shadow-sm backdrop-blur-lg">
+    <nav className="text-foreground flex items-center justify-between p-6 shadow-sm backdrop-blur-lg xl:px-32 2xl:px-44">
       <div className="flex items-center gap-x-2">
         <Link
           href={"/"}
