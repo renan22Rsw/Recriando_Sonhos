@@ -8,7 +8,7 @@ import BithdayParty from "@/public/birthday-party.png";
 
 export const Section1 = () => {
   return (
-    <section className="mx-auto grid h-150 grid-cols-1 items-center sm:h-220 lg:grid-cols-2 2xl:w-400">
+    <section className="mx-auto grid max-w-screen-2xl grid-cols-1 items-center gap-8 px-6 py-20 lg:grid-cols-2">
       <div className="container space-y-4 px-6 md:px-4 xl:px-8">
         <span className="flex w-55 items-center gap-2 rounded-3xl bg-[#F6E5E4] px-3 py-2 font-semibold text-[#E85555]">
           <PartyPopper />

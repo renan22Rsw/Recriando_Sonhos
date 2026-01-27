@@ -36,21 +36,21 @@ export const Section2 = () => {
         </p>
       </div>
 
-      <div className="mx-auto grid gap-8 px-8 py-8 md:grid-cols-2 lg:w-360 lg:grid-cols-3">
+      <div className="mx-auto grid max-w-screen-2xl grid-cols-[repeat(auto-fit,minmax(280px,420px))] justify-center gap-8 px-8 py-8">
         {prodcuts.map((prodcuts) => (
           <div
             key={prodcuts.id}
-            className="relative aspect-4/3 overflow-hidden"
+            className="relative aspect-4/3 w-full max-w-[420px] overflow-hidden rounded-2xl"
           >
             <Image
               src={prodcuts.image}
               alt={prodcuts.name}
               fill
-              className="rounded-2xl object-cover transition-all duration-150 hover:shadow-2xl"
+              className="rounded-2xl object-cover transition-all duration-500 ease-in-out hover:scale-110 hover:shadow-2xl"
               priority
             />
 
-            <div className="from-foreground/80 absolute bottom-0 flex h-full w-full flex-col justify-end gap-2 rounded-2xl bg-linear-to-t to-transparent p-4">
+            <div className="from-foreground/80 absolute bottom-0 flex w-full flex-col justify-end gap-2 rounded-2xl bg-linear-to-t to-transparent p-4">
               <h3 className="text-primary-foreground text-2xl font-bold">
                 Teste
               </h3>

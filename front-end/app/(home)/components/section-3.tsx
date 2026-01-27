@@ -23,8 +23,8 @@ export const Section3 = () => {
   ];
 
   return (
-    <section className="h-204">
-      <div className="pt-32 text-center">
+    <section className="py-20">
+      <div className="text-center">
         <span className="text-lg font-semibold text-[#E85555]">
           Como Funciona
         </span>
@@ -32,7 +32,7 @@ export const Section3 = () => {
           Simples e Rapido
         </h2>
 
-        <div className="mx-auto mt-8 block h-40 gap-4 md:flex md:justify-between lg:w-300">
+        <div className="mx-auto mt-8 block gap-4 md:flex md:justify-between lg:w-300">
           {steps.map((step) => (
             <div className="flex flex-col items-center gap-4" key={step.id}>
               <div className="flex items-center">
