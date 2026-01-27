@@ -40,7 +40,7 @@ export const Section2 = () => {
         {prodcuts.map((prodcuts) => (
           <div
             key={prodcuts.id}
-            className="relative aspect-4/3 w-full max-w-[420px] overflow-hidden rounded-2xl"
+            className="relative aspect-4/3 w-full max-w-105 overflow-hidden rounded-2xl"
           >
             <Image
               src={prodcuts.image}
