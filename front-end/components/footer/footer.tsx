@@ -10,8 +10,8 @@ import Link from "next/link";
 
 export const Footer = () => {
   return (
-    <footer className="h-150 bg-[#0B0401]">
-      <header className="border-b-primary-foreground/60 flex w-full items-center justify-between border-b px-6 py-8 xl:px-32 2xl:px-44">
+    <footer className="bg-[#0B0401]">
+      <header className="border-b-primary-foreground/60 w-full items-center justify-between space-y-4 border-b px-6 py-8 xl:flex xl:px-32 2xl:px-44">
         <div>
           <h4 className="text-xl font-semibold text-white">Fique por dentro</h4>
           <p className="text-primary-foreground/60 text-lg">
@@ -33,7 +33,7 @@ export const Footer = () => {
         </div>
       </header>
 
-      <div className="grid grid-cols-4 gap-4 py-15 xl:px-32 2xl:px-44">
+      <div className="grid gap-4 px-4 py-15 md:grid-cols-2 xl:grid-cols-4 xl:px-32 2xl:px-44">
         <div className="space-y-6">
           <div className="flex items-center gap-x-2">
             <Link
@@ -98,8 +98,9 @@ export const Footer = () => {
 
       <div className="border-primary-foreground/60 mx-auto w-[81.5%] border-t xl:px-32 2xl:px-44"></div>
 
-      <div className="text-primary-foreground/60 flex items-center justify-between py-8 lg:px-32 2xl:px-44">
+      <div className="text-primary-foreground/60 flex flex-col items-center justify-between space-y-4 px-4 py-8 lg:px-32 2xl:px-44">
         <span>© 2026 Recriando Sonhos. Todos os direitos reservados.</span>
+        <br />
         <span>Feito com ❤️ em Rio de Janeiro</span>
       </div>
     </footer>
