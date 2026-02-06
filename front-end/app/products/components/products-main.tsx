@@ -11,7 +11,7 @@ import { products } from "../products";
 
 export const ProductsMain = () => {
   return (
-    <main className="bg-[#F4F3F1] px-4 xl:px-32 2xl:px-44">
+    <main className="bg-white px-4 xl:px-32 2xl:px-44">
       <div className="relative py-10">
         <Search
           className="absolute top-1/2 left-2 -translate-y-1/2"

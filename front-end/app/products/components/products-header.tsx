@@ -2,7 +2,7 @@ import { Sparkles } from "lucide-react";
 
 export const ProductsHeader = () => {
   return (
-    <header className="h-80 bg-[#F4F3F1]">
+    <header className="h-100 bg-[#F4F3F1]">
       <div className="flex flex-col items-center space-y-6 px-4 pt-20">
         <span className="flex w-55 items-center gap-2 rounded-3xl bg-[#F6E5E4] px-3 py-2 font-semibold text-[#E85555]">
           <Sparkles />
