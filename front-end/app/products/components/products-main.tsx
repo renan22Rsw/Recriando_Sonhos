@@ -30,14 +30,16 @@ export const ProductsMain = () => {
             className="group h-full rounded-2xl border-2 bg-white shadow-2xl xl:w-120"
           >
             <div className="relative aspect-4/4 w-full max-w-120 overflow-hidden rounded-2xl">
-              <Image
-                src={UnicornParty}
-                alt="Decoracao Festa Infantil - Tema Unicornio"
-                fill
-                className="object-cover py-4 transition-all duration-500 ease-in-out hover:scale-110 hover:shadow-2xl"
-              />
+              <Link href={`/products/${product.id}`}>
+                <Image
+                  src={UnicornParty}
+                  alt="Decoracao Festa Infantil - Tema Unicornio"
+                  fill
+                  className="object-cover py-4 transition-all duration-500 ease-in-out hover:scale-110 hover:shadow-2xl"
+                />
+              </Link>
 
-              <Link href={"/#"}>
+              <Link href={`/products/${product.id}`}>
                 <Button
                   className={`absolute bottom-8 left-10 w-100 translate-y-2 cursor-pointer bg-[#E64343] font-semibold opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 hover:bg-[#E64343]/80`}
                 >
