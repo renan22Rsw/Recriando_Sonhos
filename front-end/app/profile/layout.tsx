@@ -1,0 +1,7 @@
+export default function ProfileLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return <div className="min-h-screen bg-[#F6F5F3]">{children}</div>;
+}
