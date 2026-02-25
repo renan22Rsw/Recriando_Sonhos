@@ -18,7 +18,7 @@ export const ProfilePageSection2 = () => {
                 Todos
               </TabsTrigger>
               <TabsTrigger value="pendentes">Pendentes</TabsTrigger>
-              <TabsTrigger value="Confirmados">Confirmados</TabsTrigger>
+              <TabsTrigger value="confirmados">Confirmados</TabsTrigger>
             </TabsList>
 
             <TabsContent value="todos">
