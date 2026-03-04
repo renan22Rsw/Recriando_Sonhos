@@ -1,26 +1,17 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
 import UnicornParty from "@/public/unicorn-party.png";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-
+import { InputSearch } from "@/components/input-search";
 import { products } from "../products";
 
 export const ProductsMain = () => {
   return (
     <main className="bg-white px-4 xl:px-32 2xl:px-44">
-      <div className="relative py-10">
-        <Search
-          className="absolute top-1/2 left-2 -translate-y-1/2"
-          size={16}
-        />
-        <Input
-          placeholder="Buscar Produtos"
-          className="h-11 w-full rounded-2xl px-8 selection:bg-[#E64343] selection:text-white placeholder:font-semibold focus-visible:ring-[#E64343] focus-visible:ring-offset-0 md:w-100"
-        />
+      <div className="py-10">
+        <InputSearch />
       </div>
 
       <div className="grid gap-8 pb-10 md:grid-cols-2 xl:grid-cols-3">

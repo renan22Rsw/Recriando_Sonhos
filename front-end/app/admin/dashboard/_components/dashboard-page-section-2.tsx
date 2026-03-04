@@ -3,7 +3,15 @@
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { EllipsisVertical, Check, X, Trash } from "lucide-react";
+import {
+  EllipsisVertical,
+  Check,
+  X,
+  Trash,
+  Clock,
+  CircleCheckBig,
+  CircleAlert,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -65,19 +73,25 @@ export const DashboardPageSection2 = ({ status }: { status: string }) => {
 
               <div className="flex items-center space-x-4 px-4">
                 {status === "pendente" && (
-                  <Badge className="bg-yellow-200 font-bold text-yellow-700">
+                  <Badge className="bg-yellow-200 px-4 py-2 font-bold text-yellow-700">
+                    <Clock size={12} />
                     Pendente
                   </Badge>
                 )}
 
                 {status === "confirmado" && (
-                  <Badge className="bg-blue-200 font-bold text-blue-700">
+                  <Badge className="bg-blue-200 px-4 py-2 font-bold text-blue-700">
+                    <CircleCheckBig size={12} />
                     Confirmado
                   </Badge>
                 )}
 
                 {status === "cancelado" && (
-                  <Badge variant={"destructive"} className="font-bold">
+                  <Badge
+                    variant={"destructive"}
+                    className="px-4 py-2 font-bold"
+                  >
+                    <CircleAlert size={12} />
                     Cancelado
                   </Badge>
                 )}

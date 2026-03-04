@@ -10,8 +10,8 @@ export const MobileNavbar = () => {
   const [isOpen, setOpen] = useState(false);
 
   return (
-    <nav className="relative backdrop-blur-lg">
-      <div className="text-foreground flex items-center justify-between p-6 shadow-sm backdrop-blur-lg">
+    <nav className="relative">
+      <div className="text-foreground flex items-center justify-between p-6 shadow-sm">
         <div className="flex items-center gap-x-2">
           <Link
             href={"/"}

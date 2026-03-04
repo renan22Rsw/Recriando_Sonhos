@@ -1,13 +1,14 @@
 import { Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export const ProductsHeader = () => {
   return (
     <header className="h-100 bg-[#F4F3F1]">
       <div className="flex flex-col items-center space-y-6 px-4 pt-20">
-        <span className="flex w-55 items-center gap-2 rounded-3xl bg-[#F6E5E4] px-3 py-2 font-semibold text-[#E85555]">
+        <Badge className="bg-[#F6E5E4] px-3 py-2 text-lg font-semibold text-[#E85555]">
           <Sparkles />
           Festas Inesqueciveis
-        </span>
+        </Badge>
         <h1 className="text-3xl font-bold lg:text-5xl 2xl:text-6xl">
           Nossos Produtos
         </h1>

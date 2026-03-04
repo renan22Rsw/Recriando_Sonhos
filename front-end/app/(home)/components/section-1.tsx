@@ -5,15 +5,16 @@ import Image from "next/image";
 import UnicornParty from "@/public/unicorn-party.png";
 import SunFlowerParty from "@/public/sunflower-party.png";
 import BithdayParty from "@/public/birthday-party.png";
+import { Badge } from "@/components/ui/badge";
 
 export const Section1 = () => {
   return (
     <section className="mx-auto grid max-w-screen-2xl grid-cols-1 items-center gap-8 px-6 py-20 lg:grid-cols-2">
       <div className="container space-y-4 px-6 md:px-4 xl:px-8">
-        <span className="flex w-55 items-center gap-2 rounded-3xl bg-[#F6E5E4] px-3 py-2 font-semibold text-[#E85555]">
+        <Badge className="rounded-3xl bg-[#F6E5E4] px-3 py-2 text-lg font-semibold text-[#E85555]">
           <PartyPopper />
           Festas Inesqueciveis
-        </span>
+        </Badge>
         <h1 className="font-serif text-5xl leading-tight font-bold text-balance md:text-6xl lg:text-7xl">
           Recriando{" "}
           <span className="relative text-[#E85555]">

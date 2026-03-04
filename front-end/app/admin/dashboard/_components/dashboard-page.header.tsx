@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Package } from "lucide-react";
+import Link from "next/link";
 
 export const DashBoardPageHeader = () => {
   return (
@@ -12,11 +13,11 @@ export const DashBoardPageHeader = () => {
           </p>
         </div>
 
-        <div>
+        <Link href={"/admin/products"}>
           <Button className="rounded-2xl bg-[#E64343] hover:bg-[#E64343]/80">
             <Package /> Gerenciar Produtos
           </Button>
-        </div>
+        </Link>
       </div>
     </header>
   );

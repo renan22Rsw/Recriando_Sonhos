@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Calendar, MapPin } from "lucide-react";
 
@@ -40,15 +41,18 @@ export const ProfileAppointments = ({
           </div>
         </div>
         <div className="flex items-center gap-4 px-4 xl:flex-col">
-          <p
+          <Badge
             className={cn(
-              "w-25 rounded-2xl text-center text-sm font-semibold",
-
-              `${status === "Confirmado" ? "bg-green-200 text-green-700" : `${status === "Pendente" ? "bg-yellow-200 text-yellow-700" : "bg-blue-200 text-blue-700"}`}`,
+              "font-bold",
+              status === "Confirmado"
+                ? "bg-green-200 text-green-700"
+                : status === "Pendente"
+                  ? "bg-yellow-200 text-yellow-700"
+                  : "bg-blue-200 text-blue-700",
             )}
           >
             {status}
-          </p>
+          </Badge>
           <span className="text-xl font-bold text-[#E85555]">{price}</span>
         </div>
       </div>
