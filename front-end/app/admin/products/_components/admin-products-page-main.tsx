@@ -1,11 +1,10 @@
-import { Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 
 import UnicornParty from "@/public/unicorn-party.png";
 import Image from "next/image";
 
 import { DeleteProductButton } from "./delete-product-button";
+import { EditProductButton } from "./edit-product-button";
 
 export const AdminProductsPageMain = () => {
   return (
@@ -29,9 +28,7 @@ export const AdminProductsPageMain = () => {
             </h6>
 
             <div className="flex items-center gap-2 px-4">
-              <Button variant={"outline"}>
-                <Pencil size={16} />
-              </Button>
+              <EditProductButton />
 
               <DeleteProductButton />
             </div>
