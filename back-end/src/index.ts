@@ -14,9 +14,14 @@ const port = Number(process.env.PORT) || 8000;
 
 const fastify = Fastify({
   logger: true,
+  bodyLimit: 10 * 1024 * 1024,
 });
 
-fastify.register(multipart);
+fastify.register(multipart, {
+  limits: {
+    fileSize: 10 * 1024 * 1024,
+  },
+});
 
 fastify.register(cors, {
   origin: process.env.ORIGIN_URL,

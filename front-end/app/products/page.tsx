@@ -1,11 +1,14 @@
+import { getProducts } from "@/lib/api/get-products";
 import { ProductsHeader } from "./components/products-header";
 import { ProductsMain } from "./components/products-main";
 
-const ProductsPage = () => {
+const ProductsPage = async () => {
+  const products: Products[] = await getProducts("");
+
   return (
     <>
       <ProductsHeader />
-      <ProductsMain />
+      <ProductsMain products={products} />
     </>
   );
 };

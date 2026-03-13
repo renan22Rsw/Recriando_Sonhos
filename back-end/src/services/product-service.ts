@@ -13,10 +13,6 @@ export class ProductService {
         },
       });
 
-      if (products.length === 0) {
-        throw new Error("Produto nao encontrado");
-      }
-
       return products;
     }
 

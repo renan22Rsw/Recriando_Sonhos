@@ -3,7 +3,7 @@ import { uploadProductImageStream } from "./upload-product-image-stream";
 
 export const uploadProductImage = async (
   parts: ReturnType<FastifyRequest["parts"]>,
-  formData: Record<string, any>
+  formData: Record<string, any>,
 ) => {
   let productImageUrl = "";
 
