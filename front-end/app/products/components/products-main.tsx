@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getProducts } from "@/lib/api/get-products";
+import { ProductsSkeleton } from "./products-skeleton";
+import { Products } from "@/types/products";
 
 export const ProductsMain = ({ products }: { products: Products[] }) => {
   const searchQuery = useSearchParams().get("search");
@@ -19,6 +21,7 @@ export const ProductsMain = ({ products }: { products: Products[] }) => {
   const { data: filteredProducts, isLoading } = useQuery<Products[]>({
     queryKey: ["products", search],
     queryFn: () => getProducts(search),
+    enabled: search.length > 0,
   });
 
   useEffect(() => {
@@ -26,7 +29,7 @@ export const ProductsMain = ({ products }: { products: Products[] }) => {
       if (search.length > 0) {
         router.replace(`/products?search=${search}`);
       } else {
-        router.push(pathname);
+        router.replace(pathname);
       }
     }, 500);
 
@@ -38,7 +41,9 @@ export const ProductsMain = ({ products }: { products: Products[] }) => {
       <div className="py-10">
         <InputSearch search={search} setSearch={setSearch} />
       </div>
-      {isLoading && <p>Loading.....</p>} {/* just for now */}
+
+      {isLoading && <ProductsSkeleton />}
+
       {search.length > 0 ? (
         <>
           {filteredProducts?.length === 0 ? (
