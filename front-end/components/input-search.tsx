@@ -3,7 +3,7 @@ import { Input } from "./ui/input";
 
 interface InputSearch {
   search: string;
-  setSearch: React.Dispatch<React.SetStateAction<string>>;
+  setSearch: (value: string) => void;
 }
 
 export const InputSearch = ({ search, setSearch }: InputSearch) => {
