@@ -4,6 +4,7 @@ import "./globals.css";
 import { NavBar } from "@/components/navbar/navbar";
 import { Footer } from "@/components/footer/footer";
 import Providers from "@/react-query";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default function RootLayout({
         <NavBar />
         <main className="min-h-screen">
           <Providers>{children}</Providers>
+          <Toaster />
         </main>
         <Footer />
       </body>

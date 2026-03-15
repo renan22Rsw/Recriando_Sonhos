@@ -27,7 +27,7 @@ export const auth = betterAuth({
           from: "onboarding@resend.dev",
           to: user.email,
           subject: "Verify your email adress",
-          html: `Click the link to verify your email: ${backendUrl}/api/auth/verify-email?token=${token}&callbackURL=${frontendUrl}/profile`,
+          html: `Click aqui para verificar seu email: ${backendUrl}/api/auth/verify-email?token=${token}&callbackURL=${frontendUrl}/profile`,
         });
 
         console.log("Email sent successfully!");

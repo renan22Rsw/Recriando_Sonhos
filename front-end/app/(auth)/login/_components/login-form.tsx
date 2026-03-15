@@ -14,7 +14,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { useState } from "react";
+
 export const LoginForm = () => {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -23,8 +31,37 @@ export const LoginForm = () => {
     },
   });
 
-  function onSubmit(data: z.infer<typeof loginSchema>) {
-    console.log(data);
+  async function onSubmit(data: z.infer<typeof loginSchema>) {
+    const { email, password } = data;
+
+    setLoading(true);
+
+    await authClient.signIn.email(
+      {
+        email,
+        password,
+      },
+      {
+        onSuccess: () => {
+          router.push("/profile");
+        },
+
+        onError: (ctx) => {
+          toast(
+            ctx.error.message.startsWith("Invalid email or password")
+              ? "Email ou senha inválidos"
+              : ctx.error.message,
+            {
+              description: "Por favor Tente novamente",
+            },
+          );
+        },
+
+        onSettled: () => {
+          setLoading(false);
+        },
+      },
+    );
   }
 
   return (
@@ -76,8 +113,9 @@ export const LoginForm = () => {
         <Button
           type="submit"
           className="w-4/5 cursor-pointer rounded-2xl bg-[#E64343] font-bold hover:bg-[#E64343]/90"
+          disabled={loading}
         >
-          Entrar
+          {loading ? "Entrando..." : "Entrar"}
         </Button>
         <Link
           className="text-muted-foreground py-2 font-semibold"
