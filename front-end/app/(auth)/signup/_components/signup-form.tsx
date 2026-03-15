@@ -14,7 +14,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { useState } from "react";
+
 export const SignUpForm = () => {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -24,8 +32,33 @@ export const SignUpForm = () => {
     },
   });
 
-  function onSubmit(data: z.infer<typeof signupSchema>) {
-    console.log(data);
+  async function onSubmit(data: z.infer<typeof signupSchema>) {
+    const { name, email, password } = data;
+
+    setLoading(true);
+
+    await authClient.signUp.email(
+      {
+        name,
+        email,
+        password,
+      },
+      {
+        onSuccess: () => {
+          router.push(`/verify-email?email=${email}`);
+        },
+
+        onError: (ctx) => {
+          toast(ctx.error.message, {
+            description: "Por favor Tente novamente",
+          });
+        },
+
+        onSettled: () => {
+          setLoading(false);
+        },
+      },
+    );
   }
 
   return (
@@ -97,8 +130,9 @@ export const SignUpForm = () => {
         <Button
           type="submit"
           className="w-4/5 cursor-pointer rounded-2xl bg-[#E64343] font-bold hover:bg-[#E64343]/90"
+          disabled={loading}
         >
-          Cadastrar
+          {loading ? "Cadastrando..." : "Cadastrar"}
         </Button>
         <Link
           className="text-muted-foreground py-2 font-semibold"
