@@ -5,9 +5,26 @@ import { links } from "./links";
 import { Balloon, Menu, User, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
+import { toast } from "sonner";
 export const MobileNavbar = () => {
   const [isOpen, setOpen] = useState(false);
+  const { data: session } = authClient.useSession();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await authClient.signOut();
+      router.push("/login");
+    } catch (err: unknown) {
+      toast.error("Erro ao deslogar", {
+        position: "top-center",
+        description: "Ocorreu um erro ao deslogar",
+      });
+    }
+  };
 
   return (
     <nav className="relative">
@@ -55,9 +72,18 @@ export const MobileNavbar = () => {
             </Button>
           </div>
 
-          <Button className="text-primary-foreground w-full bg-[#E85555] text-lg font-bold">
-            Entrar
-          </Button>
+          {!session ? (
+            <Button className="text-primary-foreground w-full bg-[#E85555] text-lg font-bold">
+              Entrar
+            </Button>
+          ) : (
+            <Button
+              className="text-primary-foreground w-full bg-[#E85555] text-lg font-bold"
+              onClick={handleLogout}
+            >
+              Sair
+            </Button>
+          )}
         </div>
       </div>
     </nav>

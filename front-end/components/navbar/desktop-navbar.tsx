@@ -1,13 +1,33 @@
+"use client";
+
 import { links } from "./links";
 import { Balloon } from "lucide-react";
 import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export const DesktopNavbar = () => {
+  const { data: session } = authClient.useSession();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await authClient.signOut();
+      router.push("/login");
+    } catch (err: unknown) {
+      toast.error("Erro ao deslogar", {
+        position: "bottom-right",
+        description: "Ocorreu um erro ao deslogar",
+      });
+    }
+  };
+
   return (
-    <nav className="text-foreground sticky top-0 flex items-center justify-between bg-white/80 p-6 shadow-sm backdrop-blur-md xl:px-32 2xl:px-44">
+    <nav className="text-foreground flex items-center justify-between bg-white/80 p-6 shadow-sm backdrop-blur-md xl:px-32 2xl:px-44">
       <div className="flex items-center gap-x-2">
         <Link
           href={"/"}
@@ -42,11 +62,22 @@ export const DesktopNavbar = () => {
           </Button>
         </Link>
 
-        <Link href={"/login"}>
-          <Button className="cursor-pointer rounded-full bg-[#E85555] px-6 font-semibold hover:bg-[#E85555]/90">
-            Entrar
-          </Button>
-        </Link>
+        {!session ? (
+          <Link href={"/login"}>
+            <Button className="cursor-pointer rounded-full bg-[#E85555] px-6 font-semibold hover:bg-[#E85555]/90">
+              Entrar
+            </Button>
+          </Link>
+        ) : (
+          <Link href={"/login"}>
+            <Button
+              className="cursor-pointer rounded-full bg-[#E85555] px-6 font-semibold hover:bg-[#E85555]/90"
+              onClick={handleLogout}
+            >
+              Sair
+            </Button>
+          </Link>
+        )}
 
         {/*auth*/}
       </div>
