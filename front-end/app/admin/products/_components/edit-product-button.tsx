@@ -20,15 +20,20 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import { Pencil } from "lucide-react";
+import { GripVertical, Pencil, Plus, X } from "lucide-react";
 import z from "zod";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { MoneyInput } from "./money-input";
 import { productSchema } from "@/schemas/product.schema";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
 
 export const EditProductButton = () => {
+  const [items, setItems] = useState<string[]>([]);
+  const [inputValue, setInputValue] = useState("");
+
   {
     /* it must have props */
   }
@@ -44,9 +49,24 @@ export const EditProductButton = () => {
     },
   });
 
+  {
+    /* All this functions will be replaced by the API actions*/
+  }
+
   function onSubmit(data: z.infer<typeof productSchema>) {
     console.log(data);
   }
+
+  const handleItems = () => {
+    if (!inputValue) return;
+
+    setItems((prev) => [...prev, inputValue]);
+    setInputValue("");
+  };
+
+  const removeItem = (index: number) => {
+    setItems((prev) => prev.filter((_, i) => i !== index));
+  };
 
   return (
     <Dialog>
@@ -105,7 +125,7 @@ export const EditProductButton = () => {
                     id="form-rhf-textarea-about"
                     aria-invalid={fieldState.invalid}
                     placeholder="Descreva o produto e o oque esta incluido"
-                    className="min-h-[120px] resize-none"
+                    className="min-h-30 resize-none"
                   />
 
                   {fieldState.invalid && (
@@ -170,6 +190,52 @@ export const EditProductButton = () => {
                 </Field>
               )}
             />
+
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  <FieldLabel style={{ fontWeight: "bold" }}>
+                    Oque está incluido
+                  </FieldLabel>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2">
+                  <Input
+                    onChange={(e) => setInputValue(e.target.value)}
+                    value={inputValue}
+                    placeholder="Ex: Mesa de cerimonia"
+                  />
+                  <Button
+                    onClick={() => handleItems()}
+                    variant={"outline"}
+                    className="text-muted-foreground hover:text-muted-foreground/80 font-bold"
+                    type="button"
+                  >
+                    <Plus /> Adicionar
+                  </Button>
+                </div>
+
+                <div className="max-h-40 space-y-1 overflow-y-auto">
+                  {items.map((item, index) => (
+                    <div
+                      key={index}
+                      className="bg-muted-foreground/10 my-4 flex items-center justify-between rounded-lg px-2"
+                    >
+                      <div className="flex">
+                        <GripVertical size={20} />
+                        <p className="text-foreground mb-2 px-2 text-sm">
+                          {item}
+                        </p>
+                      </div>
+                      <div className="my-4 px-4">
+                        <X size={16} onClick={() => removeItem(index)} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
             <Controller
               name="available"

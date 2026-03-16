@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Products } from "@/types/products";
+import { Check } from "lucide-react";
 
 export const ProductsIdPageMain = ({
   id,
@@ -12,6 +13,38 @@ export const ProductsIdPageMain = ({
   price,
   available,
 }: Products) => {
+  const items = [
+    {
+      id: 1,
+      text: "Arranjos florais para cerimonia",
+    },
+
+    {
+      id: 2,
+      text: "Iluminacao especial",
+    },
+
+    {
+      id: 3,
+      text: "Placas personalizadas",
+    },
+
+    {
+      id: 4,
+      text: "Decoracao de mesas (10 mesas)",
+    },
+
+    {
+      id: 5,
+      text: "Arco decorativo para cerimonia",
+    },
+
+    {
+      id: 6,
+      text: "Coordenacao no dia do evento",
+    },
+  ];
+
   return (
     <div className="space-y-8 px-4">
       <div className="flex items-center space-x-2">
@@ -57,7 +90,25 @@ export const ProductsIdPageMain = ({
             </span>
           </p>
 
-          {/*A new component will be put here */}
+          <div className="mt-10 max-w-182 rounded-2xl bg-[#F4F3F1] p-4">
+            <h3 className="px-4 text-lg font-bold">O que esta incluido:</h3>
+            <div className="p-4">
+              <ul className="grid grid-cols-1 space-y-2 lg:grid-cols-2">
+                {items.map((item) => (
+                  <li
+                    className="text-foreground flex items-center gap-x-2 font-sans"
+                    key={item.id}
+                  >
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#E64343]/10">
+                      <Check size={14} color="#E64343" />
+                    </div>
+
+                    {item.text}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
 
           <div className="flex items-center space-x-8 py-8">
             <div className="flex gap-2">

@@ -15,7 +15,7 @@ export const productSchema = z.object({
     .min(20, "A descrição deve ter no minimo 20 characters.")
     .max(100, "A descrição é muito grande, maximo: 100 characters."),
 
-  price: z.number().positive(),
+  price: z.number("Preencha o preço").positive(),
 
   image: z
     .instanceof(File, {
