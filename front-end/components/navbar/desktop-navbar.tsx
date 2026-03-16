@@ -56,7 +56,9 @@ export const DesktopNavbar = () => {
       </div>
 
       <div className="flex items-center gap-x-4">
-        <Link href={"/profile"}>
+        <Link
+          href={`${session?.user.role === "admin" ? "/admin/dashboard" : "/profile"}`}
+        >
           <Button variant={"ghost"} className="rounded-full hover:bg-amber-200">
             <User size={20} />
           </Button>

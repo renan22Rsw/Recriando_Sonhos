@@ -65,12 +65,17 @@ export const MobileNavbar = () => {
             ))}
           </ul>
 
-          <div className="py-4">
+          <Link
+            href={
+              session?.user.role === "admin" ? "/admin/dashboard" : "/profile"
+            }
+            className="py-4"
+          >
             <Button variant="outline" className="w-full text-lg shadow-lg">
               <User size={14} />
               Meu Perfil
             </Button>
-          </div>
+          </Link>
 
           {!session ? (
             <Button className="text-primary-foreground w-full bg-[#E85555] text-lg font-bold">

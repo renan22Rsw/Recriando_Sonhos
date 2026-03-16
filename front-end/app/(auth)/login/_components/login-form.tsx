@@ -17,11 +17,12 @@ import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { data: session } = authClient.useSession();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -43,7 +44,7 @@ export const LoginForm = () => {
       },
       {
         onSuccess: () => {
-          router.push("/profile");
+          router.refresh();
         },
 
         onError: (ctx) => {
@@ -55,6 +56,8 @@ export const LoginForm = () => {
               description: "Por favor Tente novamente",
             },
           );
+
+          setLoading(false);
         },
 
         onSettled: () => {
@@ -63,6 +66,16 @@ export const LoginForm = () => {
       },
     );
   }
+
+  useEffect(() => {
+    if (!session) return;
+
+    if (session.user.role === "admin") {
+      router.push("/admin/dashboard");
+    } else {
+      router.push("/profile");
+    }
+  }, [session, router]);
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>

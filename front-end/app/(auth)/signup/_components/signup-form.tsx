@@ -52,6 +52,8 @@ export const SignUpForm = () => {
           toast(ctx.error.message, {
             description: "Por favor Tente novamente",
           });
+
+          setLoading(false);
         },
 
         onSettled: () => {
