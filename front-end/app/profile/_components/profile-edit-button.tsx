@@ -25,16 +25,24 @@ import { Pencil } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 
-export const ProfileEditButton = () => {
+interface UserAppointment {
+  user: {
+    name: string;
+    email: string;
+  };
+  date: string;
+}
+
+export const ProfileEditButton = ({ user, date }: UserAppointment) => {
   type AppointmentFormData = z.input<typeof appointmentSchema>;
 
   const form = useForm<AppointmentFormData>({
     resolver: zodResolver(appointmentSchema),
     defaultValues: {
-      name: "Akame",
-      email: "akame@gmail.com",
-      phone: "21 99999-9999",
-      date: new Date(),
+      name: user.name,
+      email: user.email,
+      phone: "",
+      date: new Date(date),
     },
   });
 

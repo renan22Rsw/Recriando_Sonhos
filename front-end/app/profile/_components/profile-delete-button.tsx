@@ -1,3 +1,5 @@
+"use client";
+
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -13,7 +15,7 @@ import { Button } from "@/components/ui/button";
 
 import { Trash } from "lucide-react";
 
-export const ProfileDeleteButton = () => {
+export const ProfileDeleteButton = ({ id }: { id: string }) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -37,7 +39,10 @@ export const ProfileDeleteButton = () => {
             Cancelar
           </AlertDialogCancel>
           <AlertDialogAction asChild>
-            <Button className="bg-[#E64343] font-bold text-white">
+            <Button
+              className="bg-[#E64343] font-bold text-white"
+              onClick={() => console.log(id)}
+            >
               Deletar
             </Button>
           </AlertDialogAction>

@@ -1,8 +1,14 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfileAppointments } from "./profile-appointments";
-import { Status } from "./profile-appointments";
+import { Appointments, Status } from "@/types/appointments";
 
-export const ProfilePageSection2 = () => {
+interface ProfilePageSection2Props {
+  appointments: Appointments[];
+}
+
+export const ProfilePageSection2 = ({
+  appointments,
+}: ProfilePageSection2Props) => {
   return (
     <section className="rounded-2xl bg-white py-8 shadow-xl">
       <div className="px-4">
@@ -22,44 +28,35 @@ export const ProfilePageSection2 = () => {
             </TabsList>
 
             <TabsContent value="todos">
-              <ProfileAppointments
-                title="Decoracao Festa Infantil - Tema Unicornio"
-                status={Status.CONFIRMADO}
-                date="20/08/2023"
-                price="R$ 500,00"
-              />
-
-              <ProfileAppointments
-                title="Decoracao Festa Infantil - Tema Unicornio"
-                status={Status.PENDENTE}
-                date="20/08/2023"
-                price="R$ 500,00"
-              />
-
-              <ProfileAppointments
-                title="Decoracao Festa Infantil - Tema Unicornio"
-                status={Status.CONCLUIDO}
-                date="20/08/2023"
-                price="R$ 500,00"
-              />
+              {appointments.map((appointment) => (
+                <div key={appointment.id}>
+                  <ProfileAppointments
+                    id={appointment.id}
+                    title={appointment.product?.title}
+                    status={appointment.status}
+                    date={appointment.date}
+                    price={`R$ ${appointment.product?.price}` + ",00"}
+                    user={appointment.user}
+                  />
+                </div>
+              ))}
             </TabsContent>
 
             <TabsContent value="pendentes">
-              <ProfileAppointments
-                title="Decoracao Festa Infantil - Tema Unicornio"
-                status={Status.PENDENTE}
-                date="20/08/2023"
-                price="R$ 500,00"
-              />
-            </TabsContent>
-
-            <TabsContent value="Confirmados">
-              <ProfileAppointments
-                title="Decoracao Festa Infantil - Tema Unicornio"
-                status={Status.CONFIRMADO}
-                date="20/08/2023"
-                price="R$ 500,00"
-              />
+              {appointments
+                .filter((appointment) => appointment.status === Status.PENDING)
+                .map((appointment) => (
+                  <div key={appointment.id}>
+                    <ProfileAppointments
+                      id={appointment.id}
+                      title={appointment.product?.title}
+                      status={appointment.status}
+                      date={appointment.date}
+                      price={`R$ ${appointment.product?.price}` + ",00"}
+                      user={appointment.user}
+                    />
+                  </div>
+                ))}
             </TabsContent>
           </Tabs>
         </div>
