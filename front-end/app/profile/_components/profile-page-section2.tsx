@@ -26,7 +26,6 @@ export const ProfilePageSection2 = () => {
                 title="Decoracao Festa Infantil - Tema Unicornio"
                 status={Status.CONFIRMADO}
                 date="20/08/2023"
-                adress="Rua dos Bobos, 0"
                 price="R$ 500,00"
               />
 
@@ -34,7 +33,6 @@ export const ProfilePageSection2 = () => {
                 title="Decoracao Festa Infantil - Tema Unicornio"
                 status={Status.PENDENTE}
                 date="20/08/2023"
-                adress="Rua dos Bobos, 0"
                 price="R$ 500,00"
               />
 
@@ -42,7 +40,6 @@ export const ProfilePageSection2 = () => {
                 title="Decoracao Festa Infantil - Tema Unicornio"
                 status={Status.CONCLUIDO}
                 date="20/08/2023"
-                adress="Rua dos Bobos, 0"
                 price="R$ 500,00"
               />
             </TabsContent>
@@ -52,7 +49,6 @@ export const ProfilePageSection2 = () => {
                 title="Decoracao Festa Infantil - Tema Unicornio"
                 status={Status.PENDENTE}
                 date="20/08/2023"
-                adress="Rua dos Bobos, 0"
                 price="R$ 500,00"
               />
             </TabsContent>
@@ -62,7 +58,6 @@ export const ProfilePageSection2 = () => {
                 title="Decoracao Festa Infantil - Tema Unicornio"
                 status={Status.CONFIRMADO}
                 date="20/08/2023"
-                adress="Rua dos Bobos, 0"
                 price="R$ 500,00"
               />
             </TabsContent>
