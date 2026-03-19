@@ -6,6 +6,7 @@ import {
 import { encryptedPhone } from "../utils/encryptedPhone";
 import { sendEmail } from "../utils/send-email";
 import { AppointmentStatus } from "@prisma/client";
+
 export class UserAppointmentService {
   async getUserAppointments(userId: string) {
     if (!userId) throw new Error("Usuário nao encontrado");
@@ -68,6 +69,9 @@ export class UserAppointmentService {
     if (appointment.userId !== data.userId)
       throw new Error("Usuário não autorizado");
 
+    if (appointment.status === AppointmentStatus.CANCELED) {
+      throw new Error("Agendamento já foi cancelado");
+    }
     const updatedAppointment = await db.appointment.update({
       where: { id },
       data: {

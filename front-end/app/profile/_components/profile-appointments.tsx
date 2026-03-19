@@ -14,10 +14,9 @@ interface ProfileAppointmentsProps {
   status: Status;
   date: string;
   price: string;
-  user: {
-    name: string;
-    email: string;
-  };
+
+  email: string;
+  name: string;
 }
 
 export const ProfileAppointments = ({
@@ -26,7 +25,9 @@ export const ProfileAppointments = ({
   status,
   date,
   price,
-  user,
+
+  email,
+  name,
 }: ProfileAppointmentsProps) => {
   return (
     <div className="py-8">
@@ -66,7 +67,7 @@ export const ProfileAppointments = ({
           <div className="h-px w-full bg-gray-200"></div>
 
           <div className="flex items-center gap-2">
-            <ProfileEditButton user={user} date={date} />
+            <ProfileEditButton id={id} name={name} email={email} date={date} />
             <ProfileCancelButton id={id} />
             <ProfileDeleteButton id={id} />
           </div>

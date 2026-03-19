@@ -8,10 +8,6 @@ export interface Appointments {
   date: string;
   status: Status;
   product: Products;
-  user: {
-    name: string;
-    email: string;
-  };
 }
 
 export enum Status {

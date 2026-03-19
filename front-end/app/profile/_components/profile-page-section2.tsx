@@ -36,7 +36,8 @@ export const ProfilePageSection2 = ({
                     status={appointment.status}
                     date={appointment.date}
                     price={`R$ ${appointment.product?.price}` + ",00"}
-                    user={appointment.user}
+                    name={appointment.name}
+                    email={appointment.email}
                   />
                 </div>
               ))}
@@ -53,7 +54,8 @@ export const ProfilePageSection2 = ({
                       status={appointment.status}
                       date={appointment.date}
                       price={`R$ ${appointment.product?.price}` + ",00"}
-                      user={appointment.user}
+                      name={appointment.name}
+                      email={appointment.email}
                     />
                   </div>
                 ))}

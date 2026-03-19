@@ -19,35 +19,95 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import { appointmentSchema } from "@/schemas/appointment-schema";
+import { editAppointmentSchema } from "@/schemas/appointment-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Pencil } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface UserAppointment {
-  user: {
-    name: string;
-    email: string;
-  };
+  id: string;
+  name: string;
+  email: string;
   date: string;
 }
 
-export const ProfileEditButton = ({ user, date }: UserAppointment) => {
-  type AppointmentFormData = z.input<typeof appointmentSchema>;
+export const ProfileEditButton = ({
+  id,
+  name,
+  email,
+  date,
+}: UserAppointment) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
+
+  type AppointmentFormData = z.input<typeof editAppointmentSchema>;
 
   const form = useForm<AppointmentFormData>({
-    resolver: zodResolver(appointmentSchema),
+    resolver: zodResolver(editAppointmentSchema),
     defaultValues: {
-      name: user.name,
-      email: user.email,
+      name,
+      email,
       phone: "",
       date: new Date(date),
     },
   });
 
-  function onSubmit(data: z.input<typeof appointmentSchema>) {
-    console.log(data);
+  async function onSubmit(
+    data: z.input<typeof editAppointmentSchema>,
+    id: string,
+  ) {
+    try {
+      setIsLoading(true);
+
+      if (!id) {
+        toast.error("Agendamento nao encontrado", {
+          description: "Por favor Tente novamente",
+        });
+        return;
+      }
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/appointments/${id}`,
+        {
+          credentials: "include",
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify(data),
+        },
+      );
+
+      const responseData = await res.json();
+
+      if (!res.ok) {
+        toast.error(responseData.message, {
+          description: "Por favor Tente novamente",
+        });
+        return;
+      }
+
+      toast.success("Agendamento editado com sucesso");
+
+      router.refresh();
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message, {
+          description: "Por favor Tente novamente",
+        });
+      } else {
+        toast.error("Ocorreu um erro ao editar o agendamento", {
+          description: "Por favor Tente novamente",
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -67,7 +127,9 @@ export const ProfileEditButton = ({ user, date }: UserAppointment) => {
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form
+          onSubmit={form.handleSubmit(() => onSubmit(form.getValues(), id))}
+        >
           <FieldGroup>
             <Controller
               name="name"
@@ -184,13 +246,15 @@ export const ProfileEditButton = ({ user, date }: UserAppointment) => {
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button
-                type="submit"
-                className="bg-[#E55555] font-semibold hover:bg-[#E55555]/90"
-              >
-                Salvar
-              </Button>
+              <Button variant={"outline"}>Cancelar</Button>
             </DialogClose>
+            <Button
+              type="submit"
+              className="bg-[#E55555] font-semibold hover:bg-[#E55555]/90"
+              disabled={isLoading}
+            >
+              {isLoading ? "Editando..." : "Salvar"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

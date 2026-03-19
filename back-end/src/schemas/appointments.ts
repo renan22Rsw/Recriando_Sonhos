@@ -20,10 +20,12 @@ export const appointmentSchema = z.object({
     .max(13, {
       error: "O numero não pode ter mais de 13 dígitos",
     }),
+
   date: z.preprocess(
     (arg) => {
-      if (typeof arg === "string" || arg instanceof String) {
-        return new Date(arg as string);
+      if (typeof arg === "string") {
+        const [year, month, day] = arg.split("-").map(Number);
+        return new Date(year, month - 1, day);
       }
     },
     z
@@ -34,22 +36,22 @@ export const appointmentSchema = z.object({
       .refine(
         (date) => {
           const day = date.getDay();
-
           return day === 0 || day === 6;
         },
         {
           error: "Apenas sábado e domingo são disponiveis para o agendamento",
-        }
+        },
       )
       .refine(
         (date) => {
           const now = new Date();
+          now.setHours(0, 0, 0, 0);
           return date >= now;
         },
         {
           error: "Data deve ser maior ou igual a data atual",
-        }
-      )
+        },
+      ),
   ),
 
   status: z.string().default("pending"),
@@ -71,36 +73,39 @@ export const appointmentUpdateSchema = z.object({
     .string()
     .regex(/^(\+55\s?)?(\(?21\)?\s?)9\d{4}-?\d{4}$/)
     .optional(),
-  date: z.preprocess(
-    (arg) => {
-      if (typeof arg === "string" || arg instanceof String) {
-        return new Date(arg as string);
-      }
-    },
-    z
-      .date({
-        error: (issue) =>
-          issue.input === undefined ? "Data é obrigatória" : "Data inválida",
-      })
-      .refine(
-        (date) => {
-          const day = date.getDay();
 
-          return day === 0 || day === 6;
-        },
-        {
-          error: "Apenas sábado e domingo são disponiveis para o agendamento",
+  date: z
+    .preprocess(
+      (arg) => {
+        if (typeof arg === "string") {
+          const [year, month, day] = arg.split("-").map(Number);
+          return new Date(year, month - 1, day);
         }
-      )
-      .refine(
-        (date) => {
-          const now = new Date();
-          return date >= now;
-        },
-        {
-          error: "Data deve ser maior ou igual a data atual",
-        }
-      )
-      .optional()
-  ),
+      },
+      z
+        .date({
+          error: (issue) =>
+            issue.input === undefined ? "Data é obrigatória" : "Data inválida",
+        })
+        .refine(
+          (date) => {
+            const day = date.getDay();
+            return day === 0 || day === 6;
+          },
+          {
+            error: "Apenas sábado e domingo são disponiveis para o agendamento",
+          },
+        )
+        .refine(
+          (date) => {
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+            return date >= now;
+          },
+          {
+            error: "Data deve ser maior ou igual a data atual",
+          },
+        ),
+    )
+    .optional(),
 });
