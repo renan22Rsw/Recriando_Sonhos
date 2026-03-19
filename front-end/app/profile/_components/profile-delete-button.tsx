@@ -30,21 +30,26 @@ export const ProfileDeleteButton = ({ id }: { id: string }) => {
         toast.error("Agendamento nao encontrado", {
           description: "Por favor Tente novamente",
         });
+        return;
       }
 
-      await fetch(
+      const res = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/appointments/${id}`,
 
         {
           credentials: "include",
           method: "DELETE",
         },
-      ).then((res) => {
-        if (res.ok) {
-          toast.success("Agendamento deletado com sucesso");
-          setIsLoading(false);
-        }
-      });
+      );
+
+      if (!res.ok) {
+        toast.error("Ocorreu um erro ao deletar o agendamento", {
+          description: "Por favor Tente novamente",
+        });
+        return;
+      }
+
+      toast.success("Agendamento deletado com sucesso");
 
       router.refresh();
     } catch (err) {
@@ -52,14 +57,12 @@ export const ProfileDeleteButton = ({ id }: { id: string }) => {
         toast.error(err.message, {
           description: "Por favor Tente novamente",
         });
-
-        setIsLoading(false);
+      } else {
+        toast.error("Ocorreu um erro ao deletar o agendamento", {
+          description: "Por favor Tente novamente",
+        });
       }
-
-      toast.error("Erro ao deletar agendamento", {
-        description: "Por favor Tente novamente",
-      });
-
+    } finally {
       setIsLoading(false);
     }
   };
@@ -88,7 +91,7 @@ export const ProfileDeleteButton = ({ id }: { id: string }) => {
           </AlertDialogCancel>
           <AlertDialogAction asChild>
             <Button
-              className="bg-[#E64343] font-bold text-white"
+              className="bg-[#E64343] font-bold text-white hover:bg-[#E64343]/90"
               onClick={() => handleDeleteAppointment(id)}
               disabled={isLoading}
             >
