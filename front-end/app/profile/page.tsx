@@ -24,7 +24,7 @@ const ProfilePage = async () => {
         name={session?.user.name as string}
         email={session?.user.email as string}
       />
-      <ProfilePageSection1 />
+      <ProfilePageSection1 appointments={appointments} />
       <ProfilePageSection2 appointments={appointments} />
     </ProfilePageContainer>
   );
