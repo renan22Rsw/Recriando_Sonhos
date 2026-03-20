@@ -5,9 +5,11 @@ import { DashboardPageSection1 } from "./_components/dashboard-page-section-1";
 import { DashboardPageSection2 } from "./_components/dashboard-page-section-2";
 import { DashBoardPageHeader } from "./_components/dashboard-page.header";
 import { redirect } from "next/navigation";
+import { getAdminAppointments } from "@/lib/api/get-admin-appointments";
 
 const AdminDashboardPage = async () => {
   const session = await getSession();
+  const adminAppointments = await getAdminAppointments();
 
   if (session?.user.role !== "admin") {
     redirect("/");
@@ -16,7 +18,7 @@ const AdminDashboardPage = async () => {
   return (
     <DashboardPageContainer>
       <DashBoardPageHeader />
-      <DashboardPageSection1 />
+      <DashboardPageSection1 appointment={adminAppointments} />
       <DashboardPageSection2 status="pendente" />
     </DashboardPageContainer>
   );
