@@ -15,8 +15,14 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-export const AppointmentPageForm = () => {
+export const AppointmentPageForm = ({ productId }: { productId: string }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
+
   type AppointmentFormData = z.input<typeof appointmentSchema>;
 
   const form = useForm<AppointmentFormData>({
@@ -29,12 +35,59 @@ export const AppointmentPageForm = () => {
     },
   });
 
-  function onSubmit(data: z.input<typeof appointmentSchema>) {
-    console.log(data);
+  async function onSubmit(data: z.input<typeof appointmentSchema>, id: string) {
+    try {
+      setIsLoading(true);
+
+      if (!id) {
+        toast.error("Produto nao encontrado", {
+          description: "Por favor Tente novamente",
+        });
+        return;
+      }
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/appointments/${id}`,
+        {
+          credentials: "include",
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        },
+      );
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        toast.error(responseData.message, {
+          description: "Por favor Tente novamente",
+        });
+        return;
+      }
+
+      toast.success(responseData.message);
+      router.push("/profile");
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message, {
+          description: "Por favor Tente novamente",
+        });
+      } else {
+        toast.error("Ocorreu um erro ao editar o agendamento", {
+          description: "Por favor Tente novamente",
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
+    <form
+      onSubmit={form.handleSubmit(() => onSubmit(form.getValues(), productId))}
+    >
       <FieldGroup className="space-y-4">
         <Controller
           name="name"
@@ -134,7 +187,7 @@ export const AppointmentPageForm = () => {
           type="submit"
           className="w-4/5 cursor-pointer rounded-2xl bg-[#E64343] font-bold hover:bg-[#E64343]/90"
         >
-          Realizar Agendamento
+          {isLoading ? "Carregando..." : "Realizar Agendamento"}
         </Button>
       </div>
     </form>

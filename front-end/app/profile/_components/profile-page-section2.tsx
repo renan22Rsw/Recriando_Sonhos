@@ -60,6 +60,26 @@ export const ProfilePageSection2 = ({
                   </div>
                 ))}
             </TabsContent>
+
+            <TabsContent value="confirmados">
+              {appointments
+                .filter(
+                  (appointment) => appointment.status === Status.CONFIRMED,
+                )
+                .map((appointment) => (
+                  <div key={appointment.id}>
+                    <ProfileAppointments
+                      id={appointment.id}
+                      title={appointment.product?.title}
+                      status={appointment.status}
+                      date={appointment.date}
+                      price={`R$ ${appointment.product?.price}` + ",00"}
+                      name={appointment.name}
+                      email={appointment.email}
+                    />
+                  </div>
+                ))}
+            </TabsContent>
           </Tabs>
         </div>
       </div>

@@ -41,6 +41,16 @@ export class UserAppointmentService {
 
     if (existingAppointment) throw new Error("Usuário já agendou esse produto");
 
+    const confimedAppointment = await db.appointment.findFirst({
+      where: {
+        userId: data.userId,
+        status: AppointmentStatus.CONFIRMED,
+      },
+    });
+
+    if (confimedAppointment)
+      throw new Error("Usuário ja possui um agendamento confirmado");
+
     const appointment = await db.appointment.create({
       data: {
         ...data,
