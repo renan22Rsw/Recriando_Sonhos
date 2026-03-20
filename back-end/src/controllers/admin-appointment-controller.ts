@@ -37,7 +37,7 @@ export class AdminAppointmentController {
 
   async confirmUserAppointmentStatus(
     request: FastifyRequest,
-    reply: FastifyReply
+    reply: FastifyReply,
   ) {
     try {
       const adminRole = await this.getAdminRole(request);
@@ -45,7 +45,7 @@ export class AdminAppointmentController {
 
       await this.adminAppointmentService.confirmUserAppointmentStatus(
         adminRole,
-        id
+        id,
       );
 
       return reply
@@ -67,7 +67,7 @@ export class AdminAppointmentController {
 
       await this.adminAppointmentService.rejectUserAppointmentStatus(
         adminRole,
-        id
+        id,
       );
 
       return reply
@@ -84,7 +84,7 @@ export class AdminAppointmentController {
 
   async deleteAppointmentsFromUser(
     request: FastifyRequest,
-    reply: FastifyReply
+    reply: FastifyReply,
   ) {
     try {
       const adminRole = await this.getAdminRole(request);
@@ -92,12 +92,12 @@ export class AdminAppointmentController {
 
       await this.adminAppointmentService.deleteAppointmentFromUser(
         adminRole,
-        id
+        id,
       );
 
       return reply
         .status(200)
-        .send({ message: "Agendamento deletados com sucesso" });
+        .send({ message: "Agendamento deletado com sucesso" });
     } catch (err) {
       if (err instanceof Error) {
         return reply.status(400).send({ message: err.message });
