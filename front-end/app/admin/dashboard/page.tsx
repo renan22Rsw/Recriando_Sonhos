@@ -15,11 +15,13 @@ const AdminDashboardPage = async () => {
     redirect("/");
   }
 
+  console.log(adminAppointments);
+
   return (
     <DashboardPageContainer>
       <DashBoardPageHeader />
       <DashboardPageSection1 appointment={adminAppointments} />
-      <DashboardPageSection2 status="pendente" />
+      <DashboardPageSection2 appointment={adminAppointments} />
     </DashboardPageContainer>
   );
 };

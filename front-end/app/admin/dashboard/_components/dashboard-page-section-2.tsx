@@ -21,8 +21,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Appointments } from "@/types/appointments";
 
-export const DashboardPageSection2 = ({ status }: { status: string }) => {
+import { Status } from "@/types/appointments";
+import { dateFormatted } from "@/utils/date-formatted";
+import { DeleteUserAppointmentButton } from "./delete-user-appointment-button";
+
+interface DashboardPageSection2Props {
+  appointment: Appointments[];
+}
+
+export const DashboardPageSection2 = ({
+  appointment,
+}: DashboardPageSection2Props) => {
   const isMobile = useIsMobile();
 
   return (
@@ -43,94 +54,290 @@ export const DashboardPageSection2 = ({ status }: { status: string }) => {
           </TabsList>
 
           <TabsContent value="todos">
-            <div className="flex w-full items-center justify-between rounded-2xl bg-[#F6F5F3] px-2 py-4">
-              <div className="flex items-center gap-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F6E5E4]">
-                  <span className="text-sm font-bold">MS</span>
-                </div>
-
-                <div>
-                  <h6 className="font-bold">Maria Santos</h6>
-                  <span className="text-foreground/60 text-sm">
-                    Decoracao Festa Infantil - Tema Unicornio
-                  </span>
-                </div>
-              </div>
-
-              {!isMobile && (
-                <>
-                  <div>
-                    <h6 className="text-foreground/60 font-bold">Data</h6>
-                    <p className="font-bold">14 de Mar</p>
+            {appointment.map(({ id, name, product, date, status }) => (
+              <div
+                className="flex w-full items-center justify-between rounded-2xl bg-[#F6F5F3] px-2 py-4"
+                key={id}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F6E5E4]">
+                    <span className="text-sm font-bold">MS</span>
                   </div>
 
                   <div>
-                    <h6 className="text-foreground/60 font-bold">Valor</h6>
-                    <p className="font-bold text-[#E64343]">R$ 500,00</p>
+                    <h6 className="font-bold">{name}</h6>
+                    <span className="text-foreground/60 text-sm">
+                      {product.title}
+                    </span>
                   </div>
-                </>
-              )}
-
-              <div className="flex items-center space-x-4 px-4">
-                {status === "pendente" && (
-                  <Badge className="bg-yellow-200 px-4 py-2 font-bold text-yellow-700">
-                    <Clock size={12} />
-                    Pendente
-                  </Badge>
-                )}
-
-                {status === "confirmado" && (
-                  <Badge className="bg-blue-200 px-4 py-2 font-bold text-blue-700">
-                    <CircleCheckBig size={12} />
-                    Confirmado
-                  </Badge>
-                )}
-
-                {status === "cancelado" && (
-                  <Badge
-                    variant={"destructive"}
-                    className="px-4 py-2 font-bold"
-                  >
-                    <CircleAlert size={12} />
-                    Cancelado
-                  </Badge>
-                )}
+                </div>
 
                 {!isMobile && (
                   <>
-                    <Button
-                      variant={"outline"}
-                      className="rounded-2xl font-semibold"
-                    >
-                      Recusar
-                    </Button>
-                    <Button className="rounded-2xl bg-[#E64343] font-bold hover:bg-[#E64343]/90">
-                      Confirmar
-                    </Button>
+                    <div>
+                      <h6 className="text-foreground/60 font-bold">Data</h6>
+                      <p className="font-bold">{dateFormatted(date)}</p>
+                    </div>
+
+                    <div>
+                      <h6 className="text-foreground/60 font-bold">Valor</h6>
+                      <p className="font-bold text-[#E64343]">
+                        R$ {product.price},00
+                      </p>
+                    </div>
                   </>
                 )}
 
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <EllipsisVertical size={16} />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="border-2 bg-[#F6F5F3]">
-                    <DropdownMenuGroup className="space-y-2">
-                      <DropdownMenuLabel>Agendamento</DropdownMenuLabel>
-                      <DropdownMenuItem className="hover:bg-green cursor-pointer">
-                        <Check size={16} /> Confirmar
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer">
-                        <X size={16} /> Recusar
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer">
-                        <Trash size={16} /> Excluir
-                      </DropdownMenuItem>
-                    </DropdownMenuGroup>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="flex items-center space-x-4 px-4">
+                  {status === Status.PENDING && (
+                    <Badge className="border-yellow-300 bg-yellow-100 px-4 py-2 font-bold text-yellow-600">
+                      <Clock size={12} />
+                      Pendente
+                    </Badge>
+                  )}
+
+                  {status === Status.CONFIRMED && (
+                    <Badge className="border-green-300 bg-green-100 px-4 py-2 font-bold text-green-600">
+                      <CircleCheckBig size={12} />
+                      Confirmado
+                    </Badge>
+                  )}
+
+                  {status === Status.CANCELED && (
+                    <Badge className="border-purple-300 bg-purple-100 px-4 py-2 font-bold text-purple-600">
+                      <CircleAlert size={12} />
+                      Cancelado
+                    </Badge>
+                  )}
+
+                  {status === Status.REJECTED && (
+                    <Badge className="border-red-300 bg-red-100 text-red-600">
+                      <CircleAlert size={12} />
+                      Cancelado
+                    </Badge>
+                  )}
+
+                  {!isMobile && (
+                    <>
+                      <Button
+                        variant={"outline"}
+                        className="rounded-lg font-semibold"
+                      >
+                        Recusar
+                      </Button>
+                      <Button className="rounded-lg bg-[#E64343] font-bold hover:bg-[#E64343]/90">
+                        Confirmar
+                      </Button>
+                    </>
+                  )}
+
+                  {isMobile ? (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline">
+                          <EllipsisVertical />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuLabel className="font-semibold">
+                          Açõesz
+                        </DropdownMenuLabel>
+                        <DropdownMenuGroup>
+                          <DropdownMenuItem>
+                            <Check /> Confirmar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <X /> Recusar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Trash /> Deletar
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  ) : (
+                    <DeleteUserAppointmentButton id={id} />
+                  )}
+                </div>
               </div>
-            </div>
+            ))}
+          </TabsContent>
+
+          <TabsContent value="pendentes">
+            {appointment
+              .filter((item) => item.status === Status.PENDING)
+              .map(({ id, name, product, date }) => (
+                <div
+                  className="flex w-full items-center justify-between rounded-2xl bg-[#F6F5F3] px-2 py-4"
+                  key={id}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F6E5E4]">
+                      <span className="text-sm font-bold">MS</span>
+                    </div>
+
+                    <div>
+                      <h6 className="font-bold">{name}</h6>
+                      <span className="text-foreground/60 text-sm">
+                        {product.title}
+                      </span>
+                    </div>
+                  </div>
+
+                  {!isMobile && (
+                    <>
+                      <div>
+                        <h6 className="text-foreground/60 font-bold">Data</h6>
+                        <p className="font-bold">{dateFormatted(date)}</p>
+                      </div>
+
+                      <div>
+                        <h6 className="text-foreground/60 font-bold">Valor</h6>
+                        <p className="font-bold text-[#E64343]">
+                          R$ {product.price},00
+                        </p>
+                      </div>
+                    </>
+                  )}
+
+                  <div className="flex items-center space-x-4 px-4">
+                    <Badge className="border-yellow-300 bg-yellow-100 px-4 py-2 font-bold text-yellow-600">
+                      <Clock size={12} />
+                      Pendente
+                    </Badge>
+
+                    {!isMobile && (
+                      <>
+                        <Button
+                          variant={"outline"}
+                          className="rounded-2xl font-semibold"
+                        >
+                          Recusar
+                        </Button>
+                        <Button className="rounded-2xl bg-[#E64343] font-bold hover:bg-[#E64343]/90">
+                          Confirmar
+                        </Button>
+                      </>
+                    )}
+
+                    {isMobile ? (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline">
+                            <EllipsisVertical />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuLabel className="font-semibold">
+                            Açõesz
+                          </DropdownMenuLabel>
+                          <DropdownMenuGroup>
+                            <DropdownMenuItem>
+                              <Check /> Confirmar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <X /> Recusar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <Trash /> Deletar
+                            </DropdownMenuItem>
+                          </DropdownMenuGroup>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    ) : (
+                      <DeleteUserAppointmentButton id={id} />
+                    )}
+                  </div>
+                </div>
+              ))}
+          </TabsContent>
+          <TabsContent value="confirmados">
+            {appointment
+              .filter((item) => item.status === Status.CONFIRMED)
+              .map(({ id, name, product, date }) => (
+                <div
+                  className="flex w-full items-center justify-between rounded-2xl bg-[#F6F5F3] px-2 py-4"
+                  key={id}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F6E5E4]">
+                      <span className="text-sm font-bold">MS</span>
+                    </div>
+
+                    <div>
+                      <h6 className="font-bold">{name}</h6>
+                      <span className="text-foreground/60 text-sm">
+                        {product.title}
+                      </span>
+                    </div>
+                  </div>
+
+                  {!isMobile && (
+                    <>
+                      <div>
+                        <h6 className="text-foreground/60 font-bold">Data</h6>
+                        <p className="font-bold">{dateFormatted(date)}</p>
+                      </div>
+
+                      <div>
+                        <h6 className="text-foreground/60 font-bold">Valor</h6>
+                        <p className="font-bold text-[#E64343]">
+                          R$ {product.price},00
+                        </p>
+                      </div>
+                    </>
+                  )}
+
+                  <div className="flex items-center space-x-4 px-4">
+                    <Badge className="border-green-300 bg-green-100 px-4 py-2 font-bold text-green-600">
+                      <CircleCheckBig size={12} />
+                      Confirmado
+                    </Badge>
+
+                    {!isMobile && (
+                      <>
+                        <Button
+                          variant={"outline"}
+                          className="rounded-2xl font-semibold"
+                        >
+                          Recusar
+                        </Button>
+                        <Button className="rounded-2xl bg-[#E64343] font-bold hover:bg-[#E64343]/90">
+                          Confirmar
+                        </Button>
+                      </>
+                    )}
+
+                    {isMobile ? (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline">
+                            <EllipsisVertical />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuLabel className="font-semibold">
+                            Açõesz
+                          </DropdownMenuLabel>
+                          <DropdownMenuGroup>
+                            <DropdownMenuItem>
+                              <Check /> Confirmar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <X /> Recusar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <Trash /> Deletar
+                            </DropdownMenuItem>
+                          </DropdownMenuGroup>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    ) : (
+                      <DeleteUserAppointmentButton id={id} />
+                    )}
+                  </div>
+                </div>
+              ))}
           </TabsContent>
         </Tabs>
       </div>

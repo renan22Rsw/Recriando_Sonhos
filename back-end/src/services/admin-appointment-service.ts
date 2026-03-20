@@ -12,10 +12,10 @@ export class AdminAppointmentService {
           role: "user",
         },
       },
+      include: {
+        product: true,
+      },
     });
-
-    if (!appointments || appointments.length === 0)
-      throw new Error("Agendamentos não encontrados");
 
     return appointments;
   }
