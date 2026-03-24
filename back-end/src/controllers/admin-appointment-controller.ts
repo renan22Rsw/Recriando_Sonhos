@@ -60,12 +60,12 @@ export class AdminAppointmentController {
     }
   }
 
-  async cancelUserAppointment(request: FastifyRequest, reply: FastifyReply) {
+  async declineUserAppointment(request: FastifyRequest, reply: FastifyReply) {
     try {
       const adminRole = await this.getAdminRole(request);
       const { id } = request.params as { id: string };
 
-      await this.adminAppointmentService.rejectUserAppointmentStatus(
+      await this.adminAppointmentService.declineUserAppointmentStatus(
         adminRole,
         id,
       );

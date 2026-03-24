@@ -32,7 +32,7 @@ describe("create user appointments", () => {
       email: "test@gmail.com",
       name: "Test",
       phone: "21999999999",
-      date: "2050-01-01T15:00:00.000Z", //only works on saturdays and sundays, and it must be higher than the current date
+      date: "2050-01-08", //only works on saturdays and sundays, and it must be higher than the current date
     },
   };
 
@@ -44,7 +44,7 @@ describe("create user appointments", () => {
   beforeEach(() => {
     userAppointmentService = new UserAppointmentService();
     userAppointmentController = new UserAppointmentController(
-      userAppointmentService
+      userAppointmentService,
     );
     vi.clearAllMocks();
   });
@@ -64,7 +64,7 @@ describe("create user appointments", () => {
 
     await userAppointmentController.createUserAppointment(
       mockRequest as unknown as FastifyRequest,
-      mockReply as unknown as FastifyReply
+      mockReply as unknown as FastifyReply,
     );
 
     expect(mockReply.status).toHaveBeenCalledWith(201);
@@ -84,7 +84,7 @@ describe("create user appointments", () => {
 
     await userAppointmentController.createUserAppointment(
       mockRequest as unknown as FastifyRequest,
-      mockReply as unknown as FastifyReply
+      mockReply as unknown as FastifyReply,
     );
 
     expect(mockReply.status).toHaveBeenCalledWith(400);
@@ -106,7 +106,7 @@ describe("create user appointments", () => {
 
     await userAppointmentController.createUserAppointment(
       mockRequest as unknown as FastifyRequest,
-      mockReply as unknown as FastifyReply
+      mockReply as unknown as FastifyReply,
     );
 
     expect(mockReply.status).toHaveBeenCalledWith(500);

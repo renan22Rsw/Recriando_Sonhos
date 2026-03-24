@@ -25,7 +25,7 @@ fastify.register(multipart, {
 
 fastify.register(cors, {
   origin: process.env.ORIGIN_URL,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   credentials: true,
   maxAge: 86400,

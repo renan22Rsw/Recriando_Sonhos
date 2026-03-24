@@ -6,7 +6,7 @@ import { adminMiddleware } from "../../middleware/admin-middleware";
 export const adminAppointmentsRoutes = (app: FastifyInstance) => {
   const adminAppointmentService = new AdminAppointmentService();
   const adminAppointmentController = new AdminAppointmentController(
-    adminAppointmentService
+    adminAppointmentService,
   );
 
   app.get(
@@ -14,7 +14,7 @@ export const adminAppointmentsRoutes = (app: FastifyInstance) => {
     { preHandler: adminMiddleware },
     async (request, reply) => {
       return adminAppointmentController.getAdminAppointments(request, reply);
-    }
+    },
   );
 
   app.patch(
@@ -23,17 +23,17 @@ export const adminAppointmentsRoutes = (app: FastifyInstance) => {
     async (request, reply) => {
       return adminAppointmentController.confirmUserAppointmentStatus(
         request,
-        reply
+        reply,
       );
-    }
+    },
   );
 
   app.patch(
-    "/admin/appointments/:id/cancel",
+    "/admin/appointments/:id/decline",
     { preHandler: adminMiddleware },
     async (request, reply) => {
-      return adminAppointmentController.cancelUserAppointment(request, reply);
-    }
+      return adminAppointmentController.declineUserAppointment(request, reply);
+    },
   );
 
   app.delete(
@@ -42,8 +42,8 @@ export const adminAppointmentsRoutes = (app: FastifyInstance) => {
     async (request, reply) => {
       return adminAppointmentController.deleteAppointmentsFromUser(
         request,
-        reply
+        reply,
       );
-    }
+    },
   );
 };

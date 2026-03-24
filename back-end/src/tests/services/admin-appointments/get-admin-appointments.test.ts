@@ -22,9 +22,8 @@ describe("get admin appointments", () => {
   it("should get all appointments from users", async () => {
     (db.appointment.findMany as Mock).mockResolvedValue(userAppointmentMock);
 
-    const appointments = await adminAppointmentService.getAdminAppointments(
-      "admin"
-    );
+    const appointments =
+      await adminAppointmentService.getAdminAppointments("admin");
 
     expect(appointments).toEqual(userAppointmentMock);
     expect(db.appointment.findMany).toHaveBeenCalledWith({
@@ -33,32 +32,35 @@ describe("get admin appointments", () => {
           role: "user",
         },
       },
+      include: {
+        product: true,
+      },
     });
   });
 
   it("should throw an error if user role is not admin", async () => {
     await expect(
-      adminAppointmentService.getAdminAppointments("user")
+      adminAppointmentService.getAdminAppointments("user"),
     ).rejects.toThrow("Acesso negado");
 
     expect(db.appointment.findMany).not.toHaveBeenCalled();
   });
 
-  it("should throw an error if no appointments are found", async () => {
+  it("should return an empty array if no appointments are found", async () => {
     (db.appointment.findMany as Mock).mockResolvedValue([]);
 
     await expect(
-      adminAppointmentService.getAdminAppointments("admin")
-    ).rejects.toThrow("Agendamentos não encontrados");
+      adminAppointmentService.getAdminAppointments("admin"),
+    ).resolves.toEqual([]);
   });
 
   it("should throw an error if database fails", async () => {
     (db.appointment.findMany as Mock).mockRejectedValue(
-      new Error("Database error")
+      new Error("Database error"),
     );
 
     await expect(
-      adminAppointmentService.getAdminAppointments("admin")
+      adminAppointmentService.getAdminAppointments("admin"),
     ).rejects.toThrow("Database error");
   });
 });

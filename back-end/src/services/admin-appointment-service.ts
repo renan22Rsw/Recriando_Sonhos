@@ -55,7 +55,7 @@ export class AdminAppointmentService {
     return confirmUserAppointment;
   }
 
-  async rejectUserAppointmentStatus(role: string, id: string) {
+  async declineUserAppointmentStatus(role: string, id: string) {
     if (role !== "admin") throw new Error("Acesso negado");
 
     const appointment = await db.appointment.findUnique({

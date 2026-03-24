@@ -37,7 +37,7 @@ describe("delete appointments from users", () => {
   beforeEach(() => {
     adminAppointmentService = new AdminAppointmentService();
     adminAppointmentController = new AdminAppointmentController(
-      adminAppointmentService
+      adminAppointmentService,
     );
     vi.clearAllMocks();
   });
@@ -59,12 +59,12 @@ describe("delete appointments from users", () => {
 
     await adminAppointmentController.deleteAppointmentsFromUser(
       mockRequest as unknown as FastifyRequest,
-      mockReply as unknown as FastifyReply
+      mockReply as unknown as FastifyReply,
     );
 
     expect(mockReply.status).toHaveBeenCalledWith(200);
     expect(mockReply.send).toHaveBeenCalledWith({
-      message: "Agendamento deletados com sucesso",
+      message: "Agendamento deletado com sucesso",
     });
   });
 
@@ -82,7 +82,7 @@ describe("delete appointments from users", () => {
 
     await adminAppointmentController.deleteAppointmentsFromUser(
       mockRequest as unknown as FastifyRequest,
-      mockReply as unknown as FastifyReply
+      mockReply as unknown as FastifyReply,
     );
 
     expect(mockReply.status).toHaveBeenCalledWith(400);
@@ -105,7 +105,7 @@ describe("delete appointments from users", () => {
 
     await adminAppointmentController.deleteAppointmentsFromUser(
       mockRequest as unknown as FastifyRequest,
-      mockReply as unknown as FastifyReply
+      mockReply as unknown as FastifyReply,
     );
 
     expect(mockReply.status).toHaveBeenCalledWith(500);

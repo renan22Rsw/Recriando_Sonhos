@@ -37,7 +37,7 @@ describe("Cancel user appointment", () => {
   beforeEach(() => {
     adminAppointmentService = new AdminAppointmentService();
     adminAppointmentController = new AdminAppointmentController(
-      adminAppointmentService
+      adminAppointmentService,
     );
     vi.clearAllMocks();
   });
@@ -50,13 +50,13 @@ describe("Cancel user appointment", () => {
       },
     });
 
-    adminAppointmentService.rejectUserAppointmentStatus = vi
+    adminAppointmentService.declineUserAppointmentStatus = vi
       .fn()
       .mockResolvedValue(userAppointmentMock);
 
-    await adminAppointmentController.cancelUserAppointment(
+    await adminAppointmentController.declineUserAppointment(
       mockRequest as unknown as FastifyRequest,
-      mockReply as unknown as FastifyReply
+      mockReply as unknown as FastifyReply,
     );
 
     expect(mockReply.send).toHaveBeenCalledWith({
@@ -74,13 +74,13 @@ describe("Cancel user appointment", () => {
       },
     });
 
-    adminAppointmentService.rejectUserAppointmentStatus = vi
+    adminAppointmentService.declineUserAppointmentStatus = vi
       .fn()
       .mockRejectedValueOnce(new Error("Error"));
 
-    await adminAppointmentController.cancelUserAppointment(
+    await adminAppointmentController.declineUserAppointment(
       mockRequest as unknown as FastifyRequest,
-      mockReply as unknown as FastifyReply
+      mockReply as unknown as FastifyReply,
     );
 
     expect(mockReply.status).toHaveBeenCalledWith(400);
@@ -97,13 +97,13 @@ describe("Cancel user appointment", () => {
       },
     });
 
-    adminAppointmentService.rejectUserAppointmentStatus = vi
+    adminAppointmentService.declineUserAppointmentStatus = vi
       .fn()
       .mockRejectedValue("Error interno do servidor");
 
-    await adminAppointmentController.cancelUserAppointment(
+    await adminAppointmentController.declineUserAppointment(
       mockRequest as unknown as FastifyRequest,
-      mockReply as unknown as FastifyReply
+      mockReply as unknown as FastifyReply,
     );
 
     expect(mockReply.status).toHaveBeenCalledWith(500);

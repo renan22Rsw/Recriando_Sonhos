@@ -32,21 +32,21 @@ describe("get all products", () => {
     expect(products).toEqual(productMock);
   });
 
-  it("should throw an error if no products are found", async () => {
+  it("should return an empty array if no product is found", async () => {
     (db.product.findMany as Mock).mockResolvedValue([]);
 
-    await expect(
-      productService.getAllProducts("Product 2")
-    ).rejects.toThrowError("Produto nao encontrado");
+    await expect(productService.getAllProducts("Product 2")).resolves.toEqual(
+      [],
+    );
   });
 
   it("should throw an error if database fails", async () => {
     (db.product.findMany as Mock).mockRejectedValue(
-      new Error("Database error")
+      new Error("Database error"),
     );
 
     await expect(productService.getAllProducts("")).rejects.toThrowError(
-      "Database error"
+      "Database error",
     );
   });
 });
@@ -72,17 +72,17 @@ describe("get products by id", () => {
     (db.product.findUnique as Mock).mockResolvedValue(null);
 
     await expect(
-      productService.getProductsById(productMock.id)
+      productService.getProductsById(productMock.id),
     ).rejects.toThrowError("Produto nao encontrado");
   });
 
   it("should throw an error if database fails", async () => {
     (db.product.findUnique as Mock).mockRejectedValue(
-      new Error("Database error")
+      new Error("Database error"),
     );
 
     await expect(
-      productService.getProductsById(productMock.id)
+      productService.getProductsById(productMock.id),
     ).rejects.toThrowError("Database error");
   });
 });

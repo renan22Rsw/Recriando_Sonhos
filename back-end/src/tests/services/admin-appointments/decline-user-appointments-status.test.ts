@@ -26,7 +26,7 @@ vi.mock("../../../utils/send-email", () => ({
   sendEmail: vi.fn(),
 }));
 
-describe("update user appointments status to canceled", () => {
+describe("update user appointments status to declined", () => {
   let adminAppointmentService: AdminAppointmentService;
 
   beforeEach(() => {
@@ -34,7 +34,7 @@ describe("update user appointments status to canceled", () => {
     vi.clearAllMocks();
   });
 
-  it("should update user appointments to canceled, update product available to true and send email", async () => {
+  it("should update user appointments to declined, update product available to true and send email", async () => {
     (db.appointment.findUnique as Mock).mockResolvedValue(userAppointmentMock);
     (db.$transaction as Mock).mockResolvedValue([
       userAppointmentMock,
@@ -42,9 +42,9 @@ describe("update user appointments status to canceled", () => {
     ]);
 
     const appointment =
-      await adminAppointmentService.rejectUserAppointmentStatus(
+      await adminAppointmentService.declineUserAppointmentStatus(
         "admin",
-        userAppointmentMock.id
+        userAppointmentMock.id,
       );
 
     expect(appointment).toEqual(userAppointmentMock);
@@ -70,10 +70,10 @@ describe("update user appointments status to canceled", () => {
 
   it("should throw an error if role is not admin", async () => {
     await expect(
-      adminAppointmentService.rejectUserAppointmentStatus(
+      adminAppointmentService.declineUserAppointmentStatus(
         "user",
-        userAppointmentMock.id
-      )
+        userAppointmentMock.id,
+      ),
     ).rejects.toThrow("Acesso negado");
 
     expect(db.$transaction).not.toHaveBeenCalled();
@@ -84,10 +84,10 @@ describe("update user appointments status to canceled", () => {
     (db.appointment.findUnique as Mock).mockResolvedValue(null);
 
     await expect(
-      adminAppointmentService.rejectUserAppointmentStatus(
+      adminAppointmentService.declineUserAppointmentStatus(
         "admin",
-        userAppointmentMock.id
-      )
+        userAppointmentMock.id,
+      ),
     ).rejects.toThrow("Agendamento não encontrado");
 
     expect(db.$transaction).not.toHaveBeenCalled();
@@ -96,14 +96,14 @@ describe("update user appointments status to canceled", () => {
 
   it("should throw an error if database fails", async () => {
     (db.appointment.findUnique as Mock).mockRejectedValue(
-      new Error("Database error")
+      new Error("Database error"),
     );
 
     await expect(
-      adminAppointmentService.rejectUserAppointmentStatus(
+      adminAppointmentService.declineUserAppointmentStatus(
         "admin",
-        userAppointmentMock.id
-      )
+        userAppointmentMock.id,
+      ),
     ).rejects.toThrow("Database error");
 
     expect(db.$transaction).not.toHaveBeenCalled();

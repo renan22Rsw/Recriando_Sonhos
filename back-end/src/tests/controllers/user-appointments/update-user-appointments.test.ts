@@ -32,7 +32,7 @@ describe("update user appointment", () => {
       email: "test2@gmail.com",
       name: "Test 2",
       phone: "21999999999",
-      date: "2050-01-01T15:00:00.000Z",
+      date: "2050-01-08",
     },
   };
 
@@ -44,7 +44,7 @@ describe("update user appointment", () => {
   beforeEach(() => {
     userAppointmentService = new UserAppointmentService();
     userAppointmentController = new UserAppointmentController(
-      userAppointmentService
+      userAppointmentService,
     );
   });
 
@@ -62,7 +62,7 @@ describe("update user appointment", () => {
 
     await userAppointmentController.updateUserAppointment(
       mockRequest as unknown as FastifyRequest,
-      mockReply as unknown as FastifyReply
+      mockReply as unknown as FastifyReply,
     );
 
     expect(mockReply.status).toHaveBeenCalledWith(200);
@@ -84,7 +84,7 @@ describe("update user appointment", () => {
 
     await userAppointmentController.updateUserAppointment(
       mockRequest as unknown as FastifyRequest,
-      mockReply as unknown as FastifyReply
+      mockReply as unknown as FastifyReply,
     );
 
     expect(mockReply.status).toHaveBeenCalledWith(400);
@@ -106,7 +106,7 @@ describe("update user appointment", () => {
 
     await userAppointmentController.updateUserAppointment(
       mockRequest as unknown as FastifyRequest,
-      mockReply as unknown as FastifyReply
+      mockReply as unknown as FastifyReply,
     );
 
     expect(mockReply.status).toHaveBeenCalledWith(500);

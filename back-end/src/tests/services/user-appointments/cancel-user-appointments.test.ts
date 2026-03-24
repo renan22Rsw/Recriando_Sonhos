@@ -157,4 +157,18 @@ describe("Cancel user appointments", () => {
     expect(db.appointment.update).not.toHaveBeenCalled();
     expect(sendEmail).not.toHaveBeenCalled();
   });
+
+  it("should not cancel user appointment if database fails", async () => {
+    (db.user.findFirst as Mock).mockResolvedValue(adminMock);
+    (db.appointment.findUnique as Mock).mockRejectedValue(
+      new Error("Database error"),
+    );
+
+    await expect(
+      userAppointmentService.cancelUserAppointment(
+        userAppointmentMock.id,
+        userAppointmentMock.userId,
+      ),
+    ).rejects.toThrowError("Database error");
+  });
 });
