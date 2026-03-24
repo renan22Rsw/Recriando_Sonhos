@@ -26,6 +26,8 @@ import { Appointments } from "@/types/appointments";
 import { Status } from "@/types/appointments";
 import { dateFormatted } from "@/utils/date-formatted";
 import { DeleteUserAppointmentButton } from "./delete-user-appointment-button";
+import { ConfirmUserAppointmentButton } from "./confirm-user-appointment-button";
+import { DeclineUserAppointmentButton } from "./decline-user-appointment-button";
 
 interface DashboardPageSection2Props {
   appointment: Appointments[];
@@ -113,21 +115,15 @@ export const DashboardPageSection2 = ({
                   {status === Status.REJECTED && (
                     <Badge className="border-red-300 bg-red-100 text-red-600">
                       <CircleAlert size={12} />
-                      Cancelado
+                      Recusado
                     </Badge>
                   )}
 
                   {!isMobile && (
                     <>
-                      <Button
-                        variant={"outline"}
-                        className="rounded-lg font-semibold"
-                      >
-                        Recusar
-                      </Button>
-                      <Button className="rounded-lg bg-[#E64343] font-bold hover:bg-[#E64343]/90">
-                        Confirmar
-                      </Button>
+                      <DeclineUserAppointmentButton id={id} />
+
+                      <ConfirmUserAppointmentButton id={id} />
                     </>
                   )}
 

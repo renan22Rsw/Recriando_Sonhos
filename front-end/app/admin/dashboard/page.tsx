@@ -15,8 +15,6 @@ const AdminDashboardPage = async () => {
     redirect("/");
   }
 
-  console.log(adminAppointments);
-
   return (
     <DashboardPageContainer>
       <DashBoardPageHeader />
