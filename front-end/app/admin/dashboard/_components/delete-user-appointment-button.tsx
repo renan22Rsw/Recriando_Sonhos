@@ -43,7 +43,7 @@ export const DeleteUserAppointmentButton = ({ id }: { id: string }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        toast.success(data.message);
+        toast.error(data.message);
         return;
       }
 
@@ -52,12 +52,12 @@ export const DeleteUserAppointmentButton = ({ id }: { id: string }) => {
     } catch (err) {
       if (err instanceof Error) {
         toast.error(err.message, {
-          description: "tente novamente.",
+          description: "Por favor tente novamente.",
         });
       }
 
-      toast.error("Algo deu errado", {
-        description: "tente novamente.",
+      toast.error("Ocorreu um erro ao deletar o agendamento", {
+        description: "Por favor tente novamente.",
       });
     } finally {
       setIsLoading(false);
