@@ -3,9 +3,11 @@ import { DashboardPageContainer } from "../dashboard/_components/dashboard-page-
 import { AdminProductsPageHeader } from "./_components/admin-products-page-header";
 import { AdminProductsPageMain } from "./_components/admin-products-page-main";
 import { redirect } from "next/navigation";
+import { getProducts } from "@/lib/api/get-products";
 
 const AdminProductsPage = async () => {
   const session = await getSession();
+  const products = await getProducts("");
 
   if (session?.user.role !== "admin") {
     redirect("/");
@@ -14,7 +16,7 @@ const AdminProductsPage = async () => {
   return (
     <DashboardPageContainer>
       <AdminProductsPageHeader />
-      <AdminProductsPageMain />
+      <AdminProductsPageMain products={products} />
     </DashboardPageContainer>
   );
 };

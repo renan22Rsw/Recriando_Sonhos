@@ -1,9 +1,29 @@
+"use client";
+
 import { InputSearch } from "@/components/input-search";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { ProductForm as NewProductButton } from "./product-form";
+import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 export const AdminProductsPageHeader = () => {
+  const [search, setSearch] = useState<string>("");
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (search.length > 0) {
+        router.replace(`/admin/products?search=${search}`);
+      } else {
+        router.replace(pathname);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [search, router, pathname]);
+
   return (
     <header className="mx-auto max-w-400 sm:py-8">
       <div className="items-center justify-between md:flex">
@@ -26,7 +46,7 @@ export const AdminProductsPageHeader = () => {
         </div>
         <NewProductButton />
       </div>
-      <InputSearch />
+      <InputSearch search={search} setSearch={setSearch} />
     </header>
   );
 };
