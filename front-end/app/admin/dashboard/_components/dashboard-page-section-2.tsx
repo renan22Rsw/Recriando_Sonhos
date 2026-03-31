@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
@@ -13,14 +12,7 @@ import {
   CircleAlert,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { Appointments } from "@/types/appointments";
 
 import { Status } from "@/types/appointments";
@@ -28,6 +20,12 @@ import { dateFormatted } from "@/utils/date-formatted";
 import { DeleteUserAppointmentButton } from "./delete-user-appointment-button";
 import { ConfirmUserAppointmentButton } from "./confirm-user-appointment-button";
 import { DeclineUserAppointmentButton } from "./decline-user-appointment-button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface DashboardPageSection2Props {
   appointment: Appointments[];
@@ -55,284 +53,277 @@ export const DashboardPageSection2 = ({
             <TabsTrigger value="confirmados">Confirmados</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="todos">
+          <TabsContent value="todos" className="space-y-4">
             {appointment.map(({ id, name, product, date, status }) => (
-              <div
-                className="flex w-full items-center justify-between rounded-2xl bg-[#F6F5F3] px-2 py-4"
-                key={id}
-              >
-                <div className="flex items-center gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F6E5E4]">
-                    <span className="text-sm font-bold">MS</span>
-                  </div>
-
+              <Card key={id}>
+                <CardContent className="justify-between lg:flex">
                   <div>
-                    <h6 className="font-bold">{name}</h6>
-                    <span className="text-foreground/60 text-sm">
-                      {product.title}
-                    </span>
+                    <div className="flex items-center justify-between">
+                      <CardTitle>{name}</CardTitle>
+
+                      {isMobile && (
+                        <>
+                          {status === Status.PENDING && (
+                            <Badge className="border-yellow-300 bg-yellow-100 px-4 py-2 font-bold text-yellow-600">
+                              <Clock size={12} />
+                              Pendente
+                            </Badge>
+                          )}
+
+                          {status === Status.CONFIRMED && (
+                            <Badge className="border-green-300 bg-green-100 px-4 py-2 font-bold text-green-600">
+                              <CircleCheckBig size={12} />
+                              Confirmado
+                            </Badge>
+                          )}
+
+                          {status === Status.CANCELED && (
+                            <Badge className="border-purple-300 bg-purple-100 px-4 py-2 font-bold text-purple-600">
+                              <CircleAlert size={12} />
+                              Cancelado
+                            </Badge>
+                          )}
+
+                          {status === Status.REJECTED && (
+                            <Badge className="border-red-300 bg-red-100 text-red-600">
+                              <CircleAlert size={12} />
+                              Recusado
+                            </Badge>
+                          )}
+                        </>
+                      )}
+                    </div>
+                    <CardDescription>{product.title}</CardDescription>
                   </div>
-                </div>
 
-                {!isMobile && (
-                  <>
-                    <div>
-                      <h6 className="text-foreground/60 font-bold">Data</h6>
-                      <p className="font-bold">{dateFormatted(date)}</p>
+                  {!isMobile ? (
+                    <>
+                      <div>
+                        <CardTitle>Data</CardTitle>
+                        <CardDescription className="font-bold">
+                          {dateFormatted(date)}
+                        </CardDescription>
+                      </div>
+
+                      <div>
+                        <CardTitle>Valor</CardTitle>
+                        <CardDescription className="font-bold text-[#E64343]">
+                          R$ {product.price.toFixed(2)}
+                        </CardDescription>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex items-center justify-between py-4">
+                      <div>
+                        <CardTitle>Data</CardTitle>
+                        <CardDescription className="font-bold">
+                          {dateFormatted(date)}
+                        </CardDescription>
+                      </div>
+                      <div>
+                        <CardTitle>Valor</CardTitle>
+                        <CardDescription className="font-bold text-[#E64343]">
+                          R$ {product.price.toFixed(2)}
+                        </CardDescription>
+                      </div>
                     </div>
-
-                    <div>
-                      <h6 className="text-foreground/60 font-bold">Valor</h6>
-                      <p className="font-bold text-[#E64343]">
-                        R$ {product.price},00
-                      </p>
-                    </div>
-                  </>
-                )}
-
-                <div className="flex items-center space-x-4 px-4">
-                  {status === Status.PENDING && (
-                    <Badge className="border-yellow-300 bg-yellow-100 px-4 py-2 font-bold text-yellow-600">
-                      <Clock size={12} />
-                      Pendente
-                    </Badge>
-                  )}
-
-                  {status === Status.CONFIRMED && (
-                    <Badge className="border-green-300 bg-green-100 px-4 py-2 font-bold text-green-600">
-                      <CircleCheckBig size={12} />
-                      Confirmado
-                    </Badge>
-                  )}
-
-                  {status === Status.CANCELED && (
-                    <Badge className="border-purple-300 bg-purple-100 px-4 py-2 font-bold text-purple-600">
-                      <CircleAlert size={12} />
-                      Cancelado
-                    </Badge>
-                  )}
-
-                  {status === Status.REJECTED && (
-                    <Badge className="border-red-300 bg-red-100 text-red-600">
-                      <CircleAlert size={12} />
-                      Recusado
-                    </Badge>
                   )}
 
                   {!isMobile && (
                     <>
-                      <DeclineUserAppointmentButton id={id} />
+                      {status === Status.PENDING && (
+                        <Badge className="border-yellow-300 bg-yellow-100 px-4 py-2 font-bold text-yellow-600">
+                          <Clock size={12} />
+                          Pendente
+                        </Badge>
+                      )}
 
-                      <ConfirmUserAppointmentButton id={id} />
+                      {status === Status.CONFIRMED && (
+                        <Badge className="border-green-300 bg-green-100 px-4 py-2 font-bold text-green-600">
+                          <CircleCheckBig size={12} />
+                          Confirmado
+                        </Badge>
+                      )}
+
+                      {status === Status.CANCELED && (
+                        <Badge className="border-purple-300 bg-purple-100 px-4 py-2 font-bold text-purple-600">
+                          <CircleAlert size={12} />
+                          Cancelado
+                        </Badge>
+                      )}
+
+                      {status === Status.REJECTED && (
+                        <Badge className="border-red-300 bg-red-100 text-red-600">
+                          <CircleAlert size={12} />
+                          Recusado
+                        </Badge>
+                      )}
                     </>
                   )}
 
-                  {isMobile ? (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline">
-                          <EllipsisVertical />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuLabel className="font-semibold">
-                          Açõesz
-                        </DropdownMenuLabel>
-                        <DropdownMenuGroup>
-                          <DropdownMenuItem>
-                            <Check /> Confirmar
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <X /> Recusar
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Trash /> Deletar
-                          </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  ) : (
+                  <div className="flex justify-between space-x-4 py-4 md:py-0">
+                    <ConfirmUserAppointmentButton id={id} />
+                    <DeclineUserAppointmentButton id={id} />
                     <DeleteUserAppointmentButton id={id} />
-                  )}
-                </div>
-              </div>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </TabsContent>
 
           <TabsContent value="pendentes">
             {appointment
               .filter((item) => item.status === Status.PENDING)
-              .map(({ id, name, product, date }) => (
-                <div
-                  className="flex w-full items-center justify-between rounded-2xl bg-[#F6F5F3] px-2 py-4"
-                  key={id}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F6E5E4]">
-                      <span className="text-sm font-bold">MS</span>
-                    </div>
-
+              .map(({ id, name, product, date, status }) => (
+                <Card key={id}>
+                  <CardContent className="justify-between lg:flex">
                     <div>
-                      <h6 className="font-bold">{name}</h6>
-                      <span className="text-foreground/60 text-sm">
-                        {product.title}
-                      </span>
+                      <div className="flex items-center justify-between">
+                        <CardTitle>{name}</CardTitle>
+
+                        {isMobile && (
+                          <>
+                            {status === Status.PENDING && (
+                              <Badge className="border-yellow-300 bg-yellow-100 px-4 py-2 font-bold text-yellow-600">
+                                <Clock size={12} />
+                                Pendente
+                              </Badge>
+                            )}
+                          </>
+                        )}
+                      </div>
+                      <CardDescription>{product.title}</CardDescription>
                     </div>
-                  </div>
 
-                  {!isMobile && (
-                    <>
-                      <div>
-                        <h6 className="text-foreground/60 font-bold">Data</h6>
-                        <p className="font-bold">{dateFormatted(date)}</p>
+                    {!isMobile ? (
+                      <>
+                        <div>
+                          <CardTitle>Data</CardTitle>
+                          <CardDescription className="font-bold">
+                            {dateFormatted(date)}
+                          </CardDescription>
+                        </div>
+
+                        <div>
+                          <CardTitle>Valor</CardTitle>
+                          <CardDescription className="font-bold text-[#E64343]">
+                            R$ {product.price.toFixed(2)}
+                          </CardDescription>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex items-center justify-between py-4">
+                        <div>
+                          <CardTitle>Data</CardTitle>
+                          <CardDescription>
+                            {dateFormatted(date)}
+                          </CardDescription>
+                        </div>
+                        <div>
+                          <CardTitle>Valor</CardTitle>
+                          <CardDescription>
+                            R$ {product.price.toFixed(2)}
+                          </CardDescription>
+                        </div>
                       </div>
-
-                      <div>
-                        <h6 className="text-foreground/60 font-bold">Valor</h6>
-                        <p className="font-bold text-[#E64343]">
-                          R$ {product.price},00
-                        </p>
-                      </div>
-                    </>
-                  )}
-
-                  <div className="flex items-center space-x-4 px-4">
-                    <Badge className="border-yellow-300 bg-yellow-100 px-4 py-2 font-bold text-yellow-600">
-                      <Clock size={12} />
-                      Pendente
-                    </Badge>
+                    )}
 
                     {!isMobile && (
                       <>
-                        <Button
-                          variant={"outline"}
-                          className="rounded-2xl font-semibold"
-                        >
-                          Recusar
-                        </Button>
-                        <Button className="rounded-2xl bg-[#E64343] font-bold hover:bg-[#E64343]/90">
-                          Confirmar
-                        </Button>
+                        {status === Status.PENDING && (
+                          <Badge className="border-yellow-300 bg-yellow-100 px-4 py-2 font-bold text-yellow-600">
+                            <Clock size={12} />
+                            Pendente
+                          </Badge>
+                        )}
                       </>
                     )}
 
-                    {isMobile ? (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="outline">
-                            <EllipsisVertical />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuLabel className="font-semibold">
-                            Açõesz
-                          </DropdownMenuLabel>
-                          <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                              <Check /> Confirmar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <X /> Recusar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Trash /> Deletar
-                            </DropdownMenuItem>
-                          </DropdownMenuGroup>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    ) : (
+                    <div className="flex justify-between space-x-4 py-4 md:py-0">
+                      <ConfirmUserAppointmentButton id={id} />
+                      <DeclineUserAppointmentButton id={id} />
                       <DeleteUserAppointmentButton id={id} />
-                    )}
-                  </div>
-                </div>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
           </TabsContent>
+
           <TabsContent value="confirmados">
             {appointment
               .filter((item) => item.status === Status.CONFIRMED)
-              .map(({ id, name, product, date }) => (
-                <div
-                  className="flex w-full items-center justify-between rounded-2xl bg-[#F6F5F3] px-2 py-4"
-                  key={id}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F6E5E4]">
-                      <span className="text-sm font-bold">MS</span>
-                    </div>
-
+              .map(({ id, name, product, date, status }) => (
+                <Card key={id}>
+                  <CardContent className="justify-between lg:flex">
                     <div>
-                      <h6 className="font-bold">{name}</h6>
-                      <span className="text-foreground/60 text-sm">
-                        {product.title}
-                      </span>
+                      <div className="flex items-center justify-between">
+                        <CardTitle>{name}</CardTitle>
+
+                        {isMobile && (
+                          <>
+                            {status === Status.CONFIRMED && (
+                              <Badge className="border-green-300 bg-green-100 px-4 py-2 font-bold text-green-600">
+                                <CircleCheckBig size={12} />
+                                Confirmado
+                              </Badge>
+                            )}
+                          </>
+                        )}
+                      </div>
+                      <CardDescription>{product.title}</CardDescription>
                     </div>
-                  </div>
 
-                  {!isMobile && (
-                    <>
-                      <div>
-                        <h6 className="text-foreground/60 font-bold">Data</h6>
-                        <p className="font-bold">{dateFormatted(date)}</p>
+                    {!isMobile ? (
+                      <>
+                        <div>
+                          <CardTitle>Data</CardTitle>
+                          <CardDescription className="font-bold">
+                            {dateFormatted(date)}
+                          </CardDescription>
+                        </div>
+
+                        <div>
+                          <CardTitle>Valor</CardTitle>
+                          <CardDescription className="font-bold text-[#E64343]">
+                            R$ {product.price.toFixed(2)}
+                          </CardDescription>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex items-center justify-between py-4">
+                        <div>
+                          <CardTitle>Data</CardTitle>
+                          <CardDescription>
+                            {dateFormatted(date)}
+                          </CardDescription>
+                        </div>
+                        <div>
+                          <CardTitle>Valor</CardTitle>
+                          <CardDescription>
+                            R$ {product.price.toFixed(2)}
+                          </CardDescription>
+                        </div>
                       </div>
-
-                      <div>
-                        <h6 className="text-foreground/60 font-bold">Valor</h6>
-                        <p className="font-bold text-[#E64343]">
-                          R$ {product.price},00
-                        </p>
-                      </div>
-                    </>
-                  )}
-
-                  <div className="flex items-center space-x-4 px-4">
-                    <Badge className="border-green-300 bg-green-100 px-4 py-2 font-bold text-green-600">
-                      <CircleCheckBig size={12} />
-                      Confirmado
-                    </Badge>
+                    )}
 
                     {!isMobile && (
                       <>
-                        <Button
-                          variant={"outline"}
-                          className="rounded-2xl font-semibold"
-                        >
-                          Recusar
-                        </Button>
-                        <Button className="rounded-2xl bg-[#E64343] font-bold hover:bg-[#E64343]/90">
-                          Confirmar
-                        </Button>
+                        {status === Status.CONFIRMED && (
+                          <Badge className="border-green-300 bg-green-100 px-4 py-2 font-bold text-green-600">
+                            <CircleCheckBig size={12} />
+                            Confirmado
+                          </Badge>
+                        )}
                       </>
                     )}
 
-                    {isMobile ? (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="outline">
-                            <EllipsisVertical />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuLabel className="font-semibold">
-                            Açõesz
-                          </DropdownMenuLabel>
-                          <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                              <Check /> Confirmar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <X /> Recusar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Trash /> Deletar
-                            </DropdownMenuItem>
-                          </DropdownMenuGroup>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    ) : (
+                    <div className="flex justify-between space-x-4 py-4 md:py-0">
+                      <ConfirmUserAppointmentButton id={id} />
+                      <DeclineUserAppointmentButton id={id} />
                       <DeleteUserAppointmentButton id={id} />
-                    )}
-                  </div>
-                </div>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
           </TabsContent>
         </Tabs>
