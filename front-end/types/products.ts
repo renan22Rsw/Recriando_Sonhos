@@ -5,4 +5,10 @@ export interface Products {
   price: number;
   image: string;
   available: boolean;
+  includedItems: IncludeItems[];
+}
+
+interface IncludeItems {
+  id: number;
+  text: string;
 }

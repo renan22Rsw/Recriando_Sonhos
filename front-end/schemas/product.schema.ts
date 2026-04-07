@@ -53,4 +53,10 @@ export const productSchema = z.object({
     .optional(),
 
   available: z.boolean(),
+
+  includedItems: z.array(
+    z.object({
+      value: z.string(),
+    }),
+  ),
 });

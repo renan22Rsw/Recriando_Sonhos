@@ -6,6 +6,8 @@ const ProdcutsPageId = async ({ params }: { params: { id: string } }) => {
   const { id } = await params;
   const product = await getProductsById(id);
 
+  console.log(product);
+
   return (
     <ProductIdPageContainer>
       <ProductsIdPageMain
@@ -15,6 +17,7 @@ const ProdcutsPageId = async ({ params }: { params: { id: string } }) => {
         image={product.image}
         price={product.price}
         available={product.available}
+        includedItems={product.includedItems}
       />
     </ProductIdPageContainer>
   );

@@ -1,7 +1,17 @@
 "use client";
+
+import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useFieldArray } from "react-hook-form";
+import { useState } from "react";
+
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { MoneyInput } from "./money-input";
+import { productSchema } from "@/schemas/product.schema";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogClose,
@@ -20,21 +30,16 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import { Plus, X } from "lucide-react";
-import z from "zod";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { MoneyInput } from "./money-input";
-import { productSchema } from "@/schemas/product.schema";
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { GripVertical } from "lucide-react";
+import { Plus, X, GripVertical } from "lucide-react";
+
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export const ProductForm = () => {
-  const [items, setItems] = useState<string[]>([]);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof productSchema>>({
     resolver: zodResolver(productSchema),
@@ -44,28 +49,72 @@ export const ProductForm = () => {
       price: 100,
       image: undefined,
       available: true,
+      includedItems: [],
     },
   });
 
-  {
-    /* All this functions will be replaced by the API actions*/
-  }
+  const { control } = form;
 
-  function onSubmit(data: z.infer<typeof productSchema>) {
-    console.log(data);
-    form.reset();
-    setItems([]);
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "includedItems",
+  });
+
+  async function onSubmit(data: z.infer<typeof productSchema>) {
+    try {
+      setIsLoading(true);
+      const formData = new FormData();
+      formData.append("title", data.title);
+      formData.append("description", data.description);
+      formData.append("price", data.price.toString());
+      formData.append("available", data.available.toString());
+      formData.append("image", data.image!);
+      formData.append(
+        "includedItems",
+        JSON.stringify(data.includedItems.map((item) => item.value)),
+      );
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products`,
+        {
+          credentials: "include",
+          method: "POST",
+          body: formData,
+        },
+      );
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        toast.error(responseData.message, {
+          description: "Por favor Tente novamente",
+        });
+        return;
+      }
+
+      toast.success("Produto criado com sucesso");
+      form.reset();
+      router.refresh();
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message, {
+          description: "Por favor Tente novamente",
+        });
+      } else {
+        toast.error("Ocorreu um erro ao criar o produto", {
+          description: "Por favor Tente novamente",
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   const handleItems = () => {
     if (!inputValue) return;
 
-    setItems((prev) => [...prev, inputValue]);
+    append({ value: inputValue });
     setInputValue("");
-  };
-
-  const removeItem = (index: number) => {
-    setItems((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -76,7 +125,7 @@ export const ProductForm = () => {
           Novo Produto
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-4/5 overflow-y-auto">
+      <DialogContent className="max-h-200 overflow-auto">
         <DialogHeader>
           <DialogTitle>Criar Novo Produto</DialogTitle>
           <DialogDescription>
@@ -202,6 +251,7 @@ export const ProductForm = () => {
                   </FieldLabel>
                 </CardTitle>
               </CardHeader>
+
               <CardContent>
                 <div className="flex items-center gap-2">
                   <Input
@@ -209,30 +259,32 @@ export const ProductForm = () => {
                     value={inputValue}
                     placeholder="Ex: Mesa de cerimonia"
                   />
+
                   <Button
-                    onClick={() => handleItems()}
-                    variant={"outline"}
-                    className="text-muted-foreground hover:text-muted-foreground/80 font-bold"
+                    onClick={handleItems}
                     type="button"
+                    variant={"outline"}
+                    className="text-muted-foreground font-bold"
                   >
                     <Plus /> Adicionar
                   </Button>
                 </div>
 
                 <div className="max-h-40 space-y-1 overflow-y-auto">
-                  {items.map((item, index) => (
+                  {fields.map((field, index) => (
                     <div
-                      key={index}
+                      key={field.id}
                       className="bg-muted-foreground/10 my-4 flex items-center justify-between rounded-lg px-2"
                     >
                       <div className="flex">
                         <GripVertical size={20} />
                         <p className="text-foreground mb-2 px-2 text-sm">
-                          {item}
+                          {field.value}
                         </p>
                       </div>
+
                       <div className="my-4 px-4">
-                        <X size={16} onClick={() => removeItem(index)} />
+                        <X size={16} onClick={() => remove(index)} />
                       </div>
                     </div>
                   ))}
@@ -274,7 +326,7 @@ export const ProductForm = () => {
           </FieldGroup>
 
           <DialogFooter className="py-2">
-            <div className="r flex w-full justify-center space-x-4">
+            <div className="flex w-full justify-center space-x-4">
               <DialogClose asChild>
                 <Button variant={"outline"} className="w-2/4 cursor-pointer">
                   Cancelar
@@ -284,6 +336,7 @@ export const ProductForm = () => {
                 <Button
                   type="submit"
                   className="w-2/4 cursor-pointer bg-[#E64343] font-semibold hover:bg-[#E64343]/90"
+                  disabled={isLoading}
                 >
                   Criar Produto
                 </Button>
