@@ -7,9 +7,11 @@ export const productSchema = z.object({
     .min(10, "A descrição do produto deve ter pelo menos 10 characters"),
   price: z.preprocess(
     (val) => (typeof val === "string" ? Number(val) : val),
-    z.number().positive("O preço deve ser maior que zero")
+    z.number().positive("O preço deve ser maior que zero"),
   ),
   available: z.preprocess((val) => val === "true" || val === true, z.boolean()),
+
+  includedItems: z.array(z.string()).optional(),
 });
 
 export const updateProductSchema = z.object({
@@ -24,11 +26,13 @@ export const updateProductSchema = z.object({
   price: z
     .preprocess(
       (val) => (typeof val === "string" ? Number(val) : val),
-      z.number().positive("O preço deve ser maior que zero")
+      z.number().positive("O preço deve ser maior que zero"),
     )
     .optional(),
 
   available: z
     .preprocess((val) => val === "true" || val === true, z.boolean())
     .optional(),
+
+  includedItems: z.array(z.string()).optional(),
 });

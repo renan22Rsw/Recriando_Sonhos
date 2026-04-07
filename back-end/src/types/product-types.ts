@@ -4,6 +4,7 @@ export interface CreateProductProps {
   image: string;
   price: number;
   available: boolean;
+  includedItems: string[];
 }
 
 export interface UpdateProductProps {
@@ -12,4 +13,5 @@ export interface UpdateProductProps {
   image?: string;
   price?: number;
   available?: boolean;
+  includedItems?: string[];
 }

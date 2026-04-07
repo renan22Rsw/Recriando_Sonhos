@@ -11,18 +11,29 @@ export class ProductService {
             mode: "insensitive",
           },
         },
+        include: {
+          includedItems: true,
+        },
       });
 
       return products;
     }
 
-    return db.product.findMany();
+    return db.product.findMany({
+      include: {
+        includedItems: true,
+      },
+    });
   }
 
   async getProductsById(id: string) {
     const product = await db.product.findUnique({
       where: {
         id,
+      },
+
+      include: {
+        includedItems: true,
       },
     });
 
@@ -43,6 +54,15 @@ export class ProductService {
         image,
         price,
         available,
+        includedItems: {
+          create: data.includedItems.map((item, index) => ({
+            text: item,
+            order: index,
+          })),
+        },
+      },
+      include: {
+        includedItems: true,
       },
     });
 
@@ -51,25 +71,43 @@ export class ProductService {
 
   async updateProduct(id: string, data: UpdateProductProps) {
     const existingProduct = await db.product.findUnique({
-      where: {
-        id,
-      },
+      where: { id },
     });
 
-    if (!existingProduct?.id) {
+    if (!existingProduct) {
       throw new Error("Produto nao encontrado");
     }
 
-    const uploadProduct = await db.product.update({
-      where: {
-        id,
-      },
-      data: {
-        ...data,
-      },
+    const updatedProduct = await db.$transaction(async (tx) => {
+      const product = await tx.product.update({
+        where: { id },
+        data: {
+          title: data.title,
+          description: data.description,
+          price: data.price,
+          available: data.available,
+          image: data.image,
+        },
+      });
+
+      if (data.includedItems) {
+        await tx.productIncludedItem.deleteMany({
+          where: { productId: id },
+        });
+
+        await tx.productIncludedItem.createMany({
+          data: data.includedItems.map((item, index) => ({
+            productId: id,
+            text: item,
+            order: index,
+          })),
+        });
+      }
+
+      return product;
     });
 
-    return uploadProduct;
+    return updatedProduct;
   }
 
   async deleteProduct(id: string) {

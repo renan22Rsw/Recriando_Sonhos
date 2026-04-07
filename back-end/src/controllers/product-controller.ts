@@ -52,7 +52,17 @@ export class ProductController {
         });
       }
 
-      const { title, description, price, available } =
+      if (formData.includedItems) {
+        try {
+          formData.includedItems = JSON.parse(formData.includedItems);
+        } catch {
+          return reply.status(400).send({
+            message: "items do produto inválido",
+          });
+        }
+      }
+
+      const { title, description, price, available, includedItems } =
         productSchema.parse(formData);
 
       const product = await this.productService.createProduct({
@@ -61,6 +71,7 @@ export class ProductController {
         image: productImageUrl as string,
         price,
         available,
+        includedItems: includedItems as string[],
       });
 
       return reply.status(201).send(product);
@@ -92,7 +103,17 @@ export class ProductController {
         });
       }
 
-      const { title, description, price, available } =
+      if (formData.includedItems) {
+        try {
+          formData.includedItems = JSON.parse(formData.includedItems);
+        } catch {
+          return reply.status(400).send({
+            message: "items do produto inválido",
+          });
+        }
+      }
+
+      const { title, description, price, available, includedItems } =
         updateProductSchema.parse(formData);
 
       await this.productService.updateProduct(id, {
@@ -104,6 +125,7 @@ export class ProductController {
             : oldProductImage?.image,
         price,
         available,
+        includedItems: includedItems as string[],
       });
 
       return reply
