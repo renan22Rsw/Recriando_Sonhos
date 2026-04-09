@@ -37,6 +37,7 @@ describe("create products controller", () => {
       formData.description = "Description test";
       formData.price = 100;
       formData.available = true;
+      formData.includedItems = JSON.stringify(["Item 1", "Item 2"]);
       return "image-url";
     });
 
@@ -44,12 +45,12 @@ describe("create products controller", () => {
 
     await productController.createProduct(
       mockRequest as unknown as FastifyRequest,
-      mockReply as unknown as FastifyReply
+      mockReply as unknown as FastifyReply,
     );
 
     expect(uploadProductImage).toHaveBeenCalledWith(
       mockPartsIterator,
-      expect.any(Object)
+      expect.any(Object),
     );
 
     expect(productService.createProduct).toHaveBeenCalledWith({
@@ -58,6 +59,7 @@ describe("create products controller", () => {
       price: 100,
       available: true,
       image: "image-url",
+      includedItems: ["Item 1", "Item 2"],
     });
 
     expect(mockReply.status).toHaveBeenCalledWith(201);
@@ -70,6 +72,7 @@ describe("create products controller", () => {
       formData.description = "Description test";
       formData.price = 100;
       formData.available = true;
+      formData.includedItems = JSON.stringify(["Item 1", "Item 2"]);
       return null;
     });
 
@@ -77,16 +80,45 @@ describe("create products controller", () => {
 
     await productController.createProduct(
       mockRequest as unknown as FastifyRequest,
-      mockReply as unknown as FastifyReply
+      mockReply as unknown as FastifyReply,
     );
 
     expect(uploadProductImage).toHaveBeenCalledWith(
       mockPartsIterator,
-      expect.any(Object)
+      expect.any(Object),
     );
 
     expect(mockReply.send).toHaveBeenCalledWith({
       message: "Nenhuma imagem foi enviada",
+    });
+    expect(mockReply.status).toHaveBeenCalledWith(400);
+    expect(productService.createProduct).not.toHaveBeenCalled();
+  });
+
+  it("should not create a product if product items is invalid", async () => {
+    (uploadProductImage as Mock).mockImplementation(async (parts, formData) => {
+      formData.title = "Product test";
+      formData.description = "Description test";
+      formData.price = 100;
+      formData.available = true;
+      formData.includedItems = ["Invalid item"];
+      return "image-url";
+    });
+
+    productService.createProduct = vi.fn().mockResolvedValue(createProductMock);
+
+    await productController.createProduct(
+      mockRequest as unknown as FastifyRequest,
+      mockReply as unknown as FastifyReply,
+    );
+
+    expect(uploadProductImage).toHaveBeenCalledWith(
+      mockPartsIterator,
+      expect.any(Object),
+    );
+
+    expect(mockReply.send).toHaveBeenCalledWith({
+      message: "items do produto inválido",
     });
     expect(mockReply.status).toHaveBeenCalledWith(400);
     expect(productService.createProduct).not.toHaveBeenCalled();
@@ -98,6 +130,7 @@ describe("create products controller", () => {
       formData.description = "Description test";
       formData.price = 100;
       formData.available = true;
+      formData.includedItems = JSON.stringify(["Item 1", "Item 2"]);
       return "image-url";
     });
 
@@ -107,12 +140,12 @@ describe("create products controller", () => {
 
     await productController.createProduct(
       mockRequest as unknown as FastifyRequest,
-      mockReply as unknown as FastifyReply
+      mockReply as unknown as FastifyReply,
     );
 
     expect(uploadProductImage).toHaveBeenCalledWith(
       mockPartsIterator,
-      expect.any(Object)
+      expect.any(Object),
     );
 
     expect(mockReply.send).toHaveBeenCalledWith({
@@ -124,17 +157,17 @@ describe("create products controller", () => {
 
   it("should throw an error if status code of 500", async () => {
     (uploadProductImage as Mock).mockRejectedValueOnce(
-      "Error interno do servidor"
+      "Error interno do servidor",
     );
 
     await productController.createProduct(
       mockRequest as unknown as FastifyRequest,
-      mockReply as unknown as FastifyReply
+      mockReply as unknown as FastifyReply,
     );
 
     expect(uploadProductImage).toHaveBeenCalledWith(
       mockPartsIterator,
-      expect.any(Object)
+      expect.any(Object),
     );
 
     expect(mockReply.send).toHaveBeenCalledWith({

@@ -29,6 +29,16 @@ describe("create product", () => {
     expect(db.product.create).toHaveBeenCalledWith({
       data: {
         ...createProductMock,
+
+        includedItems: {
+          create: createProductMock.includedItems.map((item, index) => ({
+            text: item,
+            order: index,
+          })),
+        },
+      },
+      include: {
+        includedItems: true,
       },
     });
   });
@@ -37,7 +47,7 @@ describe("create product", () => {
     (db.product.create as Mock).mockRejectedValue(new Error("Database error"));
 
     await expect(
-      productService.createProduct(createProductMock)
+      productService.createProduct(createProductMock),
     ).rejects.toThrowError("Database error");
   });
 });

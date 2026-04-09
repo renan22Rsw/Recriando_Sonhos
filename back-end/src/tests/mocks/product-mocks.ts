@@ -7,6 +7,7 @@ export const productMock = {
   available: true,
   createdAt: new Date(),
   updatedAt: new Date(),
+  includedItems: ["Item 1", "Item 2"],
 };
 
 export const createProductMock = {
@@ -15,6 +16,7 @@ export const createProductMock = {
   image: "Image 1",
   price: 100,
   available: true,
+  includedItems: ["Item 1", "Item 2"],
 };
 
 export const updateProductMock = {
@@ -23,4 +25,5 @@ export const updateProductMock = {
   image: "Image 2",
   price: 200,
   available: true,
+  includedItems: ["Item 1", "Item 2"],
 };
