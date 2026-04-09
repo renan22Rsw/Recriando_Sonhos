@@ -32,7 +32,15 @@ export const AdminProductsPageMain = ({
   return (
     <>
       {productsToShow.map(
-        ({ id, title, description, available, image, price }) => (
+        ({
+          id,
+          title,
+          description,
+          available,
+          image,
+          price,
+          includedItems,
+        }) => (
           <section className="my-8 rounded-2xl bg-white shadow-2xl" key={id}>
             <div className="gap-4 md:flex">
               <div className="flex h-60 items-center sm:h-40">
@@ -64,7 +72,14 @@ export const AdminProductsPageMain = ({
                   </h6>
 
                   <div className="flex items-center gap-2 px-4">
-                    <EditProductButton />
+                    <EditProductButton
+                      id={id}
+                      title={title}
+                      description={description}
+                      price={price}
+                      available={available}
+                      includedItems={includedItems}
+                    />
 
                     <DeleteProductButton id={id} />
                   </div>

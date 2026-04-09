@@ -8,7 +8,7 @@ export interface Products {
   includedItems: IncludeItems[];
 }
 
-interface IncludeItems {
+export interface IncludeItems {
   id: number;
   text: string;
 }

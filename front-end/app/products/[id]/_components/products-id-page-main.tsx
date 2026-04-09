@@ -12,39 +12,8 @@ export const ProductsIdPageMain = ({
   image,
   price,
   available,
+  includedItems,
 }: Products) => {
-  const items = [
-    {
-      id: 1,
-      text: "Arranjos florais para cerimonia",
-    },
-
-    {
-      id: 2,
-      text: "Iluminacao especial",
-    },
-
-    {
-      id: 3,
-      text: "Placas personalizadas",
-    },
-
-    {
-      id: 4,
-      text: "Decoracao de mesas (10 mesas)",
-    },
-
-    {
-      id: 5,
-      text: "Arco decorativo para cerimonia",
-    },
-
-    {
-      id: 6,
-      text: "Coordenacao no dia do evento",
-    },
-  ];
-
   return (
     <div className="space-y-8 px-4">
       <div className="flex items-center space-x-2">
@@ -94,7 +63,7 @@ export const ProductsIdPageMain = ({
             <h3 className="px-4 text-lg font-bold">O que esta incluido:</h3>
             <div className="p-4">
               <ul className="grid grid-cols-1 space-y-2 lg:grid-cols-2">
-                {items.map((item) => (
+                {includedItems.map((item) => (
                   <li
                     className="text-foreground flex items-center gap-x-2 font-sans"
                     key={item.id}

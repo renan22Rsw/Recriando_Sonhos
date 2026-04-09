@@ -6,8 +6,6 @@ const ProdcutsPageId = async ({ params }: { params: { id: string } }) => {
   const { id } = await params;
   const product = await getProductsById(id);
 
-  console.log(product);
-
   return (
     <ProductIdPageContainer>
       <ProductsIdPageMain

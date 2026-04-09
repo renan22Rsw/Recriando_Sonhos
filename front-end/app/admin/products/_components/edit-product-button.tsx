@@ -1,7 +1,18 @@
 "use client";
+
+import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { MoneyInput } from "./money-input";
+import { productSchema } from "@/schemas/product.schema";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import {
   Dialog,
   DialogClose,
@@ -20,52 +31,109 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+
 import { GripVertical, Pencil, Plus, X } from "lucide-react";
-import z from "zod";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { MoneyInput } from "./money-input";
-import { productSchema } from "@/schemas/product.schema";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useState } from "react";
+import { IncludeItems } from "@/types/products";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
-export const EditProductButton = () => {
-  const [items, setItems] = useState<string[]>([]);
+interface EditProductButtonProps {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  available: boolean;
+  includedItems: IncludeItems[];
+}
+
+export const EditProductButton = ({
+  id,
+  title,
+  description,
+  price,
+  available,
+  includedItems,
+}: EditProductButtonProps) => {
   const [inputValue, setInputValue] = useState("");
-
-  {
-    /* it must have props */
-  }
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof productSchema>>({
     resolver: zodResolver(productSchema),
     defaultValues: {
-      title: "Decoracao Festa Infantil - Tema Unicornio",
-      description: "Decoracao completa para festa infantil com tema unicornio",
-      price: 1000,
+      title,
+      description,
+      price,
+      available,
       image: undefined,
-      available: true,
+      includedItems: includedItems.map((item) => ({
+        value: item.text,
+      })),
     },
   });
 
-  {
-    /* All this functions will be replaced by the API actions*/
-  }
+  const { control } = form;
 
-  function onSubmit(data: z.infer<typeof productSchema>) {
-    console.log(data);
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "includedItems",
+  });
+
+  async function onSubmit(data: z.infer<typeof productSchema>) {
+    try {
+      setIsLoading(true);
+      const formData = new FormData();
+      formData.append("title", data.title);
+      formData.append("description", data.description);
+      formData.append("price", data.price.toString());
+      formData.append("available", data.available.toString());
+      formData.append("image", data.image!);
+      formData.append(
+        "includedItems",
+        JSON.stringify(data.includedItems.map((item) => item.value)),
+      );
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/${id}`,
+        {
+          credentials: "include",
+          method: "PUT",
+          body: formData,
+        },
+      );
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        toast.error(responseData.message, {
+          description: "Por favor Tente novamente",
+        });
+        return;
+      }
+
+      toast.success("Produto atualizado com sucesso");
+      form.reset();
+      router.refresh();
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message, {
+          description: "Por favor Tente novamente",
+        });
+      } else {
+        toast.error("Ocorreu um erro ao atualizar o produto", {
+          description: "Por favor Tente novamente",
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   const handleItems = () => {
     if (!inputValue) return;
 
-    setItems((prev) => [...prev, inputValue]);
+    append({ value: inputValue });
     setInputValue("");
-  };
-
-  const removeItem = (index: number) => {
-    setItems((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -75,7 +143,7 @@ export const EditProductButton = () => {
           <Pencil size={16} />
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-h-4/5 overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Criar Novo Produto</DialogTitle>
           <DialogDescription>
@@ -207,7 +275,7 @@ export const EditProductButton = () => {
                     placeholder="Ex: Mesa de cerimonia"
                   />
                   <Button
-                    onClick={() => handleItems()}
+                    onClick={handleItems}
                     variant={"outline"}
                     className="text-muted-foreground hover:text-muted-foreground/80 font-bold"
                     type="button"
@@ -217,19 +285,19 @@ export const EditProductButton = () => {
                 </div>
 
                 <div className="max-h-40 space-y-1 overflow-y-auto">
-                  {items.map((item, index) => (
+                  {fields.map((item, index) => (
                     <div
-                      key={index}
+                      key={item.id}
                       className="bg-muted-foreground/10 my-4 flex items-center justify-between rounded-lg px-2"
                     >
                       <div className="flex">
                         <GripVertical size={20} />
                         <p className="text-foreground mb-2 px-2 text-sm">
-                          {item}
+                          {item.value}
                         </p>
                       </div>
                       <div className="my-4 px-4">
-                        <X size={16} onClick={() => removeItem(index)} />
+                        <X size={16} onClick={() => remove(index)} />
                       </div>
                     </div>
                   ))}
@@ -277,12 +345,15 @@ export const EditProductButton = () => {
                   Cancelar
                 </Button>
               </DialogClose>
-              <Button
-                type="submit"
-                className="w-2/4 cursor-pointer bg-[#E64343] font-semibold hover:bg-[#E64343]/90"
-              >
-                Criar Produto
-              </Button>
+              <DialogClose asChild>
+                <Button
+                  type="submit"
+                  className="w-2/4 cursor-pointer bg-[#E64343] font-semibold hover:bg-[#E64343]/90"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Editando..." : "Salvar"}
+                </Button>
+              </DialogClose>
             </div>
           </DialogFooter>
         </form>
