@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 
 import { toast } from "sonner";
 export const MobileNavbar = () => {
-  const [isOpen, setOpen] = useState(false);
+  const [isOpen, setOpen] = useState<boolean>(false);
   const { data: session } = authClient.useSession();
   const router = useRouter();
 
@@ -18,11 +18,13 @@ export const MobileNavbar = () => {
     try {
       await authClient.signOut();
       router.push("/login");
+      setOpen(false);
     } catch (err: unknown) {
       toast.error("Erro ao deslogar", {
         position: "top-center",
         description: "Ocorreu um erro ao deslogar",
       });
+      setOpen(false);
     }
   };
 
@@ -56,11 +58,16 @@ export const MobileNavbar = () => {
             : "pointer-events-none max-h-0 opacity-0"
         } `}
       >
-        <div className="p-6">
+        <div className="px-6 py-8">
           <ul>
             {links.map(({ id, title, href }) => (
               <Link key={id} href={href}>
-                <li className="py-2 text-lg font-bold">{title}</li>
+                <li
+                  className="py-2 text-lg font-bold"
+                  onClick={() => setOpen(false)}
+                >
+                  {title}
+                </li>
               </Link>
             ))}
           </ul>
@@ -71,23 +78,34 @@ export const MobileNavbar = () => {
             }
             className="py-4"
           >
-            <Button variant="outline" className="w-full text-lg shadow-lg">
+            <Button
+              variant="outline"
+              className="w-full text-lg shadow-lg"
+              onClick={() => setOpen(false)}
+            >
               <User size={14} />
               Meu Perfil
             </Button>
           </Link>
 
           {!session ? (
-            <Button className="text-primary-foreground w-full bg-[#E85555] text-lg font-bold">
-              Entrar
-            </Button>
+            <div className="py-4">
+              <Button
+                className="text-primary-foreground w-full bg-[#E85555] text-lg font-bold"
+                onClick={() => setOpen(false)}
+              >
+                Entrar
+              </Button>
+            </div>
           ) : (
-            <Button
-              className="text-primary-foreground w-full bg-[#E85555] text-lg font-bold"
-              onClick={handleLogout}
-            >
-              Sair
-            </Button>
+            <div className="py-4">
+              <Button
+                className="text-primary-foreground w-full bg-[#E85555] text-lg font-bold"
+                onClick={handleLogout}
+              >
+                Sair
+              </Button>
+            </div>
           )}
         </div>
       </div>

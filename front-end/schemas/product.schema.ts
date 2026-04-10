@@ -9,11 +9,11 @@ export const productSchema = z.object({
   title: z
     .string()
     .min(5, "O titulo do produto deve ter mais de 3 characters")
-    .max(32, "O titulo do produto é muito grande, maximo: 32 characters"),
+    .max(50, "O titulo do produto é muito grande, maximo: 50 characters"),
   description: z
     .string()
     .min(20, "A descrição deve ter no minimo 20 characters.")
-    .max(100, "A descrição é muito grande, maximo: 100 characters."),
+    .max(200, "A descrição é muito grande, maximo: 200 characters."),
 
   price: z.number("Preencha o preço").positive(),
 

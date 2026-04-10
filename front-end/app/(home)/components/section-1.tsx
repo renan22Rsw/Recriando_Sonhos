@@ -6,10 +6,11 @@ import UnicornParty from "@/public/unicorn-party.png";
 import SunFlowerParty from "@/public/sunflower-party.png";
 import BithdayParty from "@/public/birthday-party.png";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 export const Section1 = () => {
   return (
-    <section className="mx-auto grid max-w-screen-2xl grid-cols-1 items-center gap-8 px-6 py-20 lg:grid-cols-2">
+    <section className="mx-auto grid h-screen max-w-screen-2xl grid-cols-1 items-center gap-8 px-6 py-20 lg:grid-cols-2">
       <div className="container space-y-4 px-6 md:px-4 xl:px-8">
         <Badge className="rounded-3xl bg-[#F6E5E4] px-3 py-2 text-lg font-semibold text-[#E85555]">
           <PartyPopper />
@@ -38,18 +39,25 @@ export const Section1 = () => {
           Decorações personalizadas que contam a sua historia.
         </p>
         <div className="space-y-4 space-x-4 py-4 sm:flex">
-          <Button className="w-full cursor-pointer rounded-3xl bg-[#E85555] p-6 text-lg font-semibold text-white outline-none hover:bg-[#E85555]/90 sm:w-50">
-            Explorar Produtos{" "}
-            <span className="pt-0.5">
-              <ArrowRight />
-            </span>
-          </Button>
-          <Button
-            variant={"outline"}
-            className="w-full cursor-pointer rounded-3xl p-6 text-lg font-semibold outline-none sm:w-50"
-          >
-            Fale Conosco
-          </Button>
+          <div>
+            <Link href={"/products"}>
+              <Button className="w-full cursor-pointer rounded-3xl bg-[#E85555] p-6 text-lg font-semibold text-white outline-none hover:bg-[#E85555]/90 sm:w-50">
+                Explorar Produtos{" "}
+                <span className="pt-0.5">
+                  <ArrowRight />
+                </span>
+              </Button>
+            </Link>
+          </div>
+
+          <Link href="/contact">
+            <Button
+              variant={"outline"}
+              className="w-full cursor-pointer rounded-3xl p-6 text-lg font-semibold outline-none sm:w-50"
+            >
+              Fale Conosco
+            </Button>
+          </Link>
         </div>
       </div>
 

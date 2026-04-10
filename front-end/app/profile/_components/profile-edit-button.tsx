@@ -92,7 +92,7 @@ export const ProfileEditButton = ({
         return;
       }
 
-      toast.success("Agendamento editado com sucesso");
+      toast.success(responseData.message);
 
       router.refresh();
     } catch (err) {
@@ -238,10 +238,6 @@ export const ProfileEditButton = ({
                 </Field>
               )}
             />
-
-            <FieldLabel className="text-muted-foreground pb-2 font-semibold">
-              Decoracao Festa Infantil - Tema Unicornio
-            </FieldLabel>
           </FieldGroup>
 
           <DialogFooter>

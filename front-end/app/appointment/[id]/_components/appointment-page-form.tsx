@@ -67,7 +67,7 @@ export const AppointmentPageForm = ({ productId }: { productId: string }) => {
         return;
       }
 
-      toast.success(responseData.message);
+      toast.success("Agendamento criado com sucesso");
       router.push("/profile");
     } catch (err) {
       if (err instanceof Error) {

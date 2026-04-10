@@ -19,7 +19,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export const ProfileDeleteButton = ({ id }: { id: string }) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const handleDeleteAppointment = async (id: string) => {
@@ -33,7 +33,7 @@ export const ProfileDeleteButton = ({ id }: { id: string }) => {
         return;
       }
 
-      const res = await fetch(
+      const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/appointments/${id}`,
 
         {
@@ -42,14 +42,16 @@ export const ProfileDeleteButton = ({ id }: { id: string }) => {
         },
       );
 
-      if (!res.ok) {
-        toast.error("Ocorreu um erro ao deletar o agendamento", {
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        toast.error(responseData.message, {
           description: "Por favor Tente novamente",
         });
         return;
       }
 
-      toast.success("Agendamento deletado com sucesso");
+      toast.success(responseData.message);
 
       router.refresh();
     } catch (err) {

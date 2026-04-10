@@ -59,25 +59,29 @@ export const ProductsIdPageMain = ({
             </span>
           </p>
 
-          <div className="mt-10 max-w-182 rounded-2xl bg-[#F4F3F1] p-4">
-            <h3 className="px-4 text-lg font-bold">O que esta incluido:</h3>
-            <div className="p-4">
-              <ul className="grid grid-cols-1 space-y-2 lg:grid-cols-2">
-                {includedItems.map((item) => (
-                  <li
-                    className="text-foreground flex items-center gap-x-2 font-sans"
-                    key={item.id}
-                  >
-                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#E64343]/10">
-                      <Check size={14} color="#E64343" />
-                    </div>
+          {includedItems.length > 0 && (
+            <>
+              <div className="mt-10 max-w-182 rounded-2xl bg-[#F4F3F1] p-4">
+                <h3 className="px-4 text-lg font-bold">O que esta incluido:</h3>
+                <div className="p-4">
+                  <ul className="grid grid-cols-1 space-y-2 lg:grid-cols-2">
+                    {includedItems.map((item) => (
+                      <li
+                        className="text-foreground flex items-center gap-x-2 font-sans"
+                        key={item.id}
+                      >
+                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#E64343]/10">
+                          <Check size={14} color="#E64343" />
+                        </div>
 
-                    {item.text}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+                        {item.text}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </>
+          )}
 
           <div className="flex items-center space-x-8 py-8">
             <div className="flex gap-2">

@@ -76,11 +76,11 @@ export const ProductsMain = ({ products }: { products: Products[] }) => {
                     </Link>
                   </div>
 
-                  <div className="p-4">
+                  <div className="space-y-4 p-4">
                     <h1 className="text-foreground font-bold lg:text-xl">
                       {fieltedProduct.title}
                     </h1>
-                    <p className="text-foreground/60 md:text-md text-sm">
+                    <p className="text-foreground/60 lg:text-md">
                       {fieltedProduct.description}
                     </p>
                     <div className="flex flex-col py-4">
@@ -88,7 +88,7 @@ export const ProductsMain = ({ products }: { products: Products[] }) => {
                         A parti de
                       </span>
                       <span className="text-xl font-bold text-[#E64343]">
-                        R$ {fieltedProduct.price + ",00"}
+                        R$ {fieltedProduct.price.toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -123,17 +123,18 @@ export const ProductsMain = ({ products }: { products: Products[] }) => {
                 </Link>
               </div>
 
-              <div className="p-4">
+              <div className="space-y-4 p-4">
                 <h1 className="text-foreground font-bold lg:text-xl">
                   {product.title}
                 </h1>
-                <p className="text-foreground/60 md:text-md text-sm">
+                <p className="text-foreground/60 lg:text-md">
                   {product.description}
                 </p>
+
                 <div className="flex flex-col py-4">
                   <span className="text-foreground/60 text-xs">A parti de</span>
                   <span className="text-xl font-bold text-[#E64343]">
-                    R$ {product.price + ",00"}
+                    R$ {product.price.toFixed(2)}
                   </span>
                 </div>
               </div>

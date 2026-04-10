@@ -6,7 +6,7 @@ export const ContactPageSection3 = () => {
       <div className="space-y-2 py-4 text-center">
         <h3 className="text-4xl font-bold">Nossa Localizacao</h3>
         <p className="text-foreground/60 text-lg">
-          Estamos localizados na Zona Sul de Sao Paulo, com facil acesso.
+          Estamos localizados na oeste do Rio de janeiro, com facil acesso.
         </p>
       </div>
 

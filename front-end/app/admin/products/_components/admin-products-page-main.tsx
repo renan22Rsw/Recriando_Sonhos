@@ -9,6 +9,7 @@ import { Products } from "@/types/products";
 import { getProducts } from "@/lib/api/get-products";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AdminProductsPageMainProps {
   products: Products[];
@@ -17,6 +18,8 @@ interface AdminProductsPageMainProps {
 export const AdminProductsPageMain = ({
   products,
 }: AdminProductsPageMainProps) => {
+  const isMobile = useIsMobile();
+
   const search = useSearchParams().get("search") ?? "";
 
   const { data: filteredProducts, isLoading } = useQuery<Products[]>({
@@ -43,15 +46,25 @@ export const AdminProductsPageMain = ({
         }) => (
           <section className="my-8 rounded-2xl bg-white shadow-2xl" key={id}>
             <div className="gap-4 md:flex">
-              <div className="flex h-60 items-center sm:h-40">
-                <Image
-                  src={image}
-                  alt="Product image"
-                  width={150}
-                  height={150}
-                  className="h-full w-full"
-                />
-              </div>
+              {isMobile ? (
+                <div className="relative aspect-4/4 w-full max-w-120 overflow-hidden rounded-2xl">
+                  <Image
+                    src={image}
+                    alt="Product image"
+                    fill
+                    className="object-cover py-4"
+                  />
+                </div>
+              ) : (
+                <>
+                  <Image
+                    src={image}
+                    alt="Product image"
+                    width={150}
+                    height={150}
+                  />
+                </>
+              )}
 
               <div className="flex w-full flex-col justify-center space-y-2 px-2 py-4">
                 <div className="flex w-full items-center justify-between gap-2">
@@ -84,7 +97,7 @@ export const AdminProductsPageMain = ({
                     <DeleteProductButton id={id} />
                   </div>
                 </div>
-                <span className="text-foreground/60 text-lg">
+                <span className="text-foreground/60 xl:text-lg">
                   {description}
                 </span>
                 <span className="text-2xl font-bold text-[#E64343]">
